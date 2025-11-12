@@ -1,0 +1,275 @@
+/* 1. Reseteo Básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif; /* Fuente similar a la de la imagen */
+}
+
+a {
+    text-decoration: none;
+    color: inherit; /* Hereda el color del texto padre */
+}
+
+/* 2. Estilos del Header Principal (Barra Superior) */
+.main-header {
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+}
+
+.header-container {
+    max-width: 1200px; /* Ancho máximo del contenido, ajústalo si es necesario */
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+}
+
+/* --- Sección Logo y Búsqueda (Izquierda) --- */
+.logo-search-section {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espacio entre los elementos */
+}
+
+/* Estilos del Logo "SGS" */
+.logo {
+    font-size: 36px;
+    font-weight: bold;
+    position: relative;
+    line-height: 1;
+}
+
+.sgs-text {
+    color: #444; /* Color de texto para SGS */
+}
+
+/* Línea naranja bajo SGS (detalle visual) */
+.logo::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%; /* Ajusta el ancho de la línea */
+    height: 3px;
+    background-color: orange;
+}
+
+.sgs-world-text {
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+    margin-right: 15px;
+    margin: 15px;
+}
+
+/* Estilos de la Barra de Búsqueda */
+.search-bar {
+    display: flex;
+    border: 1px solid #ccc;
+}
+
+.search-dropdown,
+.search-bar input[type="text"] {
+    padding: 10px;
+    border: none;
+    background-color: #f0f0f0;
+    font-size: 14px;
+    color: #333;
+}
+
+.search-dropdown {
+    width: 150px; /* Ancho del desplegable */
+    appearance: none; /* Ocultar flecha por defecto en algunos navegadores */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath fill='%23666' d='M5 6l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 25px;
+}
+
+.search-bar input[type="text"] {
+    background-color: #fff;
+    width: 250px;
+    border-left: 1px solid #ccc;
+}
+
+.search-button {
+    background-color: #444;
+    color: #fff;
+    border: none;
+    padding: 0 15px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- Sección de Íconos (Derecha) --- */
+.icon-nav {
+    display: flex;
+    height: 60px; /* Altura para igualar el tamaño de la búsqueda */
+}
+
+.icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 15px;
+    font-size: 12px;
+    color: #444;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    text-align: center;
+    min-width: 80px; /* Ancho mínimo para los items */
+}
+
+.icon-item i {
+    font-size: 24px;
+    margin-bottom: 5px;
+    color: #666; /* Color de los íconos por defecto */
+}
+
+.icon-item:hover:not(.blue-button) {
+    background-color: #f0f0f0;
+}
+
+/* Ítem de Alerta (COVID-19) */
+.alert-item {
+    background-color: #f0f0f0; /* Fondo gris claro */
+    color: #aaa;
+}
+
+.alert-item i {
+    color: #ffc107; /* Color de advertencia/amarillo */
+}
+
+/* Botón Azul "My Tools" */
+.blue-button {
+    background-color: #007bff; /* Azul vibrante */
+    color: #fff;
+    font-weight: bold;
+}
+
+.blue-button i {
+    color: #fff;
+}
+
+/* 3. Barra de Navegación Secundaria (Barra Inferior) */
+.secondary-nav {
+    background-color: #333; /* Fondo gris oscuro */
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.nav-links li a {
+    display: block;
+    padding: 12px 20px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    transition: background-color 0.3s;
+}
+
+.nav-links li a:hover {
+    background-color: #555;
+}
+
+
+
+/* Estilo para los menús desplegables (pequeña flecha) */
+.has-dropdown a i {
+    font-size: 10px;
+    margin-left: 5px;
+}
+
+
+
+/* Estilos para la Nueva Sección de Herramientas */
+.tool-section {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+.tool-section h1 {
+    font-size: 28px;
+    color: #333;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.tool-card {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    padding: 25px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start; /* Alinea los elementos a la izquierda */
+}
+
+/* Estilo para el input de archivo */
+#textFileInput {
+    padding: 8px 0;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Estilo para el botón principal de la herramienta */
+.blue-button-main {
+    background-color: #007bff; /* Mismo azul que My Tools */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.blue-button-main:hover {
+    background-color: #0056b3;
+}
+
+.blue-button-main i {
+    margin-right: 8px;
+}
+
+.contenedor-imagen img {
+  /* Convierte la imagen en un elemento de bloque */
+  display: block; 
+  padding: 8px 0;
+  /* Distribuye el margen horizontalmente de forma automática */
+  margin: 10px auto;
+}
+
+.h2{
+    margin: 10px;
+    margin-top: 15px;
+}
+
+.sgs-world-text-2 {
+    font-size: 16px;
+    font-weight: bold;
+    color: #FF0000;
+    margin-right: 15px;
+    margin: 15px;
+    text-decoration: underline;
+}

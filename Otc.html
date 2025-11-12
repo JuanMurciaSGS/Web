@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBS Americas SGS del Perú</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-search-section">
+                <div class="logo">
+                    <span class="sgs-text">SGS</span>
+                </div>
+                <span class="sgs-world-text">GBS Americas - SGS del Perú SAC</span>
+                
+            </div>
+
+        </div>
+    </header>
+
+    <nav class="secondary-nav">
+        <ul class="nav-links">
+            <li><a href="Otc.html">OTC Unbill Revenue</a></li>
+            <li><a href="BadDebt.html">Bad Debt Report</a></li>
+            <li><a href="Unidentify.html">Unidentify Report</a></li>
+            <li><a href="Ageing.html">Ageing Report</a></li>
+        </ul>
+    </nav>
+
+
+
+<main class="tool-section" data-report-type="otc">
+        <h1>OTC Unbill Revenue Report</h1>
+        
+
+        <h2 class="h2">Descarga reporte en Oracle</h2>
+
+            <p class="sgs-world-text">1. Desde Oracle, se debe ejecutar el reporte con fecha del día: Request - Submit New Request - "SGS OTC Generate Unbilled Accrual Journal" y se deben seleccionar los siguientes parametros:</p>
+                
+            
+            <div class="contenedor-imagen"> 
+            <img src="C:\Users\Juan_Murcia\Desktop\Web\Imagenes OCT\OTC_Parameters.1.png" alt="Otc parametros de descarga" width="600" height="300">
+            </div>
+
+            <p class="sgs-world-text">2. Esperamos a que el reporte termine:</p>
+
+            <div class="contenedor-imagen"> 
+            <img src="C:\Users\Juan_Murcia\Desktop\Web\Imagenes OCT\OTC_Esperar reporte.2.png" alt="Esperamos descarga" width="400" height="300">
+            </div>
+
+            <p class="sgs-world-text">3. En el momento que descarga, vamos a Actions - Zip and Download Output, el sistema descarga una carpeta comprimida, y en esta hay un archivo de texto.  </p>
+
+            <p class="sgs-world-text">4. El archivo de texto lo subimos en el siguiente campo. Verifica que la cuenta 4000427 se reemplace por la 4000425 en el Excel que vamos a descargar</p>    
+
+        <div class="tool-card">
+            <p class="sgs-world-text">Sube tu archivo de texto para generar el reporte de OTC.</p>
+            
+            <input type="file" id="textFileInput" accept=".txt">
+            
+            <button id="convertButton" class="blue-button-main">
+                <i class="fas fa-file-excel"></i> Ejecutar y Transformar a Excel
+            </button>
+            
+            <div id="statusMessage" style="margin-top: 15px; color: red;"></div>
+        </div>
+        
+            
+
+        <h2 class="h2">Importación del OTC</h2>
+
+            <p class="sgs-world-text">1. Cuando fue ejecutado el proceso, en Oracle se generó un Request ID:</p>
+
+            <div class="contenedor-imagen"> 
+            <img src="C:\Users\Juan_Murcia\Desktop\Web\Imagenes OCT\Importación OTC.4.png" alt="OTC_ID" width="400" height="300">
+            </div>
+
+            <p class="sgs-world-text">2. En el modulo de GL, vamos a correr el reporte para subir el asiento contable:</p>
+
+            <div class="contenedor-imagen"> 
+            <img src="C:\Users\Juan_Murcia\Desktop\Web\Imagenes OCT\Run OTC.5.png" alt="OTC_ID" width="400" height="300">
+            </div>
+
+            <p class="sgs-world-text">3. En la ventana se colocan los siguientes datos:
+                Source: SGS OTC Unbilled Accrual, Ledger: PE_F391501, Selection Criteria: Specific Group Id, Specific Value, el valor antes obtenido del proceso. Finalmente se da click en “Import” y posteriormente al botón “Yes”.
+            </p>
+
+            <div class="contenedor-imagen"> 
+            <img src="C:\Users\Juan_Murcia\Desktop\Web\Imagenes OCT\Run OTC.6.png" alt="OTC_ID" width="350" height="300">
+            </div>
+
+            <p class="sgs-world-text">4. Se revisa en los procesos que el “Journal Import” haya terminado sin errores
+            </p>
+
+            <div class="contenedor-imagen"> 
+            <img src="C:\Users\Juan_Murcia\Desktop\Web\Imagenes OCT\Run OTC.7.png" alt="OTC_ID" width="350" height="300">
+            </div>
+
+            <p class="sgs-world-text">5. Luego se pasa a revisar el asiento en el banco de trabajo de asientos en GL
+            </p>
+
+            <div class="contenedor-imagen"> 
+            <img src="C:\Users\Juan_Murcia\Desktop\Web\Imagenes OCT\Run OTC.8.png" alt="OTC_ID" width="350" height="300">
+            </div>
+
+            <p class="sgs-world-text">6. Se revisa que el monto sea el mismo que estaba en el Excel correspondiente, esta alerta se puede verificar en esta página cuando descargamos el Excel.
+            </p>
+
+            <div class="contenedor-imagen"> 
+            <img src="C:\Users\Juan_Murcia\Desktop\Web\Imagenes OCT\Run OTC.9.png" alt="OTC_ID" width="1000" height="300">
+            </div>
+
+            <p class="sgs-world-text">7. Ingresamos al asiento y en la linterna vamos a buscar por cuenta 4000427
+            </p>
+
+            <div class="contenedor-imagen"> 
+            <img src="C:\Users\Juan_Murcia\Desktop\Web\Imagenes OCT\Correccion Asiento 1.png" alt="OTC_ID" width="500" height="300">
+            </div>
+
+            <div class="contenedor-imagen"> 
+            <img src="C:\Users\Juan_Murcia\Desktop\Web\Imagenes OCT\Correccion Asiento 2.png" alt="OTC_ID" width="500" height="300">
+            </div>
+
+            <div class="contenedor-imagen"> 
+            <img src="C:\Users\Juan_Murcia\Desktop\Web\Imagenes OCT\Correccion Asiento 3.png" alt="OTC_ID" width="300" height="300">
+            </div>
+
+            <div class="contenedor-imagen"> 
+            <img src="C:\Users\Juan_Murcia\Desktop\Web\Imagenes OCT\Correccion Asiento 4.png" alt="OTC_ID" width="500" height="300">
+            </div>
+
+            <p class="sgs-world-text-2">8. Cambiamos manualmente las cuentas 4000427 por la 4000425 en el detalle de la cuenta
+            </p>
+
+            <div class="contenedor-imagen"> 
+            <img src="C:\Users\Juan_Murcia\Desktop\Web\Imagenes OCT\Correccion Asiento 5.png" alt="OTC_ID" width="500" height="300">
+            </div>
+            
+            <p class="sgs-world-text">9. Vamos a la linterna nuevamente y verificamos en la columna de intercompany que no tengamos el F391501 ya que no es normal que nos facturemos a nosotros mismos. Si aparece lo informamos a la coordinación y gerencia para esperar la decisión. Este paso lo podemos validar en la alerta cuando descargamos en Excel en esta página.
+            </p>
+
+            <p class="sgs-world-text">10. Se aprueba el asiento y se revisa que pase por aprobadores (Jefe de Contabilidad y Gerente Financiero).
+            </p>
+
+            <div class="contenedor-imagen"> 
+            <img src="C:\Users\Juan_Murcia\Desktop\Web\Imagenes OCT\Run OTC.10.png" alt="OTC_ID" width="600" height="300">
+            </div>
+
+            <p class="sgs-world-text">11. Se envía correo confirmando la finalización del proceso.
+            </p>
+
+    </main>
+
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script> 
+    <script src="converter.js"></script>
+
+</body>
+</html>
