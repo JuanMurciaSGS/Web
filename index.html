@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBS Americas SGS del Perú</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-search-section">
+                <div class="logo">
+                    <span class="sgs-text">SGS</span>
+                </div>
+                <span class="sgs-world-text">GBS Americas - SGS del Perú SAC</span>
+                
+            </div>
+
+        </div>
+    </header>
+
+    <nav class="secondary-nav">
+        <ul class="nav-links">
+            <li><a href="Otc.html">OTC Unbill Revenue</a></li>
+            <li><a href="BadDebt.html">Bad Debt Report</a></li>
+            <li><a href="Unidentify.html">Unidentify Report</a></li>
+            <li><a href="Ageing.html">Ageing Report</a></li>
+        </ul>
+    </nav>
+
+    <main class="tool-section">
+        <h1>Ageing Report</h1>
+
+        <h2 class="h2">Descarga reporte en Oracle</h2>
+
+        <p class="sgs-world-text">1. Desde Oracle, se debe ejecutar el reporte con fecha del día: Request - Submit New Request - SGS Ageing Detail RetroActive TEXT (ALL) - </p>
+        
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Ageing/Ageing_Parameters 1.png" alt="Ageing parametros de descarga" width="600" height="300">
+            </div>
+
+        <p class="sgs-world-text">2. En el momento que descarga, vamos a Actions - Zip and Download Output, el sistema descarga una carpeta comprimida, y en esta hay un archivo de texto.  </p>
+
+        <div class="tool-card">
+            <p>Sube tu archivo de texto (.txt) para generar el Ageing por cada FCODE en formato Excel (.csv).</p>
+            
+            <input type="file" id="textFileInput" accept=".txt">
+            
+            <button id="convertButton" class="blue-button-main">
+                <i class="fas fa-file-excel"></i> Ejecutar y Convertir a Excel
+            </button>
+            
+            <div id="statusMessage" style="margin-top: 15px; color: red;"></div>
+        </div>
+        
+    </main>
+
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="converter.js"></script>
+
+</body>
+</html>
