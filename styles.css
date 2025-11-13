@@ -220,6 +220,7 @@ a {
     flex-direction: column;
     gap: 15px;
     align-items: flex-start; /* Alinea los elementos a la izquierda */
+    margin-top: 15px;
 }
 
 /* Estilo para el input de archivo */
