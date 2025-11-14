@@ -343,12 +343,37 @@
             <img src="Imagenes BadDebt/asiento 11.png" alt="Query Bad Debt Report" width="300" height="200">
             </div>
 
-<p class="sgs-world-text">5. =BUSCARV(C2;CC!$A$1:$B$6;2;0) Puedes crear una hoja llamada CC con,los datos de la tabla y hacer el cruce con esta formula, el archivo te debe quedar como el siguiente ejemplo.</p>
+        <p class="sgs-world-text">5. =BUSCARV(C2;CC!$A$1:$B$6;2;0) Puedes crear una hoja llamada CC con,los datos de la tabla y hacer el cruce con esta formula, el archivo te debe quedar como el siguiente ejemplo.</p>
 
             <div class="contenedor-imagen"> 
             <img src="Imagenes BadDebt/asiento 12.png" alt="Query Bad Debt Report" width="800" height="300">
             </div>
 
+        <p class="sgs-world-text">6. La segunda parte del asiento es la contrapartida, vamos a voltear la cuenta debe y el haber, segundo copiamos la información y vamos a borrar la columna RECEIVABLE_ACCOUNT y vamos a dejar solo la cuenta 5501411, y borramos SECTOR, ACT y CL.</p>
+ 
+             <div class="contenedor-imagen"> 
+            <img src="Imagenes BadDebt/asiento 13.png" alt="Query Bad Debt Report" width="800" height="300">
+            </div>
+
+        <p class="sgs-world-text">7. Ahora vamos a trabajar con el listado de Cecos Actualizado, este es compartido por el equipo local o R2R. Lo que queremos buscar es según el COST CENTER, vamos a buscar el SECTOR, ACT, y CL. Esto lo vamos a hacer con formulas buscarv. Concejo, puedes hacer una tabla con la información en la hoja CC que creamos para hacer el cruce de Sectores, solo incluye las columnas CeCo, Sector, Code_Activity, CL, CONCATENAR del listado de Cecos. </p>
+
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes BadDebt/asiento 14.png" alt="Query Bad Debt Report" width="600" height="300">
+            </div>
+
+        <p class="sgs-world-text">8. Vamos a hacer 3 Buscarv, para cruzar la Información. Este paso es importante ya que estamos haciendo la validación de Cecos actualizados.</p>
+        <p class="sgs-world-text">Columna SECTOR, =BUSCARV(E482;CC!E:I;2;0).</p>
+        <p class="sgs-world-text">Columna ACT, =BUSCARV(E482;CC!E:I;3;0).</p>
+        <p class="sgs-world-text">Columna ACT, =BUSCARV(E482;CC!E:I;4;0).</p>
+        <p class="sgs-world-text-2">Debes tener presente la celda que estas buscando de referencia, si vas a copiar la formula</p>
+     
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes BadDebt/asiento 15.png" alt="Query Bad Debt Report" width="600" height="300">
+            </div>
+
+        <p class="sgs-world-text">9. Copias la formula en todos los datos y ya tenemos el ultimo asiento.</p> 
+
+        <p class="sgs-world-text-2">10. Estos mismos pasos los debes hacer para el Asiento en PEN y en USD.</p>
 
     </main>
 
