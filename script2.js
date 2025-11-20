@@ -11,16 +11,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // **Ajuste de CTAs y lógica DEBE/HABER**
         if (rol === 'ingreso') { // Asiento/Extorno que afecta a la cuenta de INGRESO (4000)
             cta = '4000415';
-            if (tipoAsiento === 'asiento') { // ASENTAR INGRESO: Ingreso va al DEBE
+            if (tipoAsiento === 'asiento') { // ASENTAR INGRESO: Ingreso va al HABER
                 valorDebe = '0'; valorHaber = data.valor;
-            } else { // EXTORNAR INGRESO: Ingreso va al HABER
+            } else { // EXTORNAR INGRESO: Ingreso va al DEBE
                 valorDebe = data.valor; valorHaber = '0';
             }
         } else { // rol === 'pasivo' (Afecta a la cuenta de PASIVO/DIFERIDO 1651)
             cta = '1651111';
-            if (tipoAsiento === 'asiento') { // ASENTAR INGRESO: Pasivo va al HABER
+            if (tipoAsiento === 'asiento') { // ASENTAR INGRESO: Pasivo va al DEBE
                 valorDebe = data.valor; valorHaber = '0';
-            } else { // EXTORNAR INGRESO: Pasivo va al DEBE
+            } else { // EXTORNAR INGRESO: Pasivo va al HABER
                 valorDebe = '0'; valorHaber = data.valor;
             }
         }
