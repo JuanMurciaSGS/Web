@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBS Americas SGS del Perú</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-search-section">
+                <div class="logo">
+                    <span class="sgs-text">SGS</span>
+                </div>
+                <span class="sgs-world-text">GBS Americas - SGS del Perú SAC</span>
+                
+            </div>
+
+        </div>
+    </header>
+
+    <nav class="secondary-nav">
+        <ul class="nav-links">
+            <li><a href="Otc.html">OTC Unbill Revenue</a></li>
+            <li><a href="BadDebt.html">Bad Debt Report</a></li>
+            <li><a href="Ingresos_Diferidos.html">Ingresos Diferidos</a></li>
+            <li><a href="Asientos_Manuales.html">Asientos Manuales</a></li>
+            <li><a href="Unidentify.html">Unidentify Report</a></li>
+            <li><a href="index.html">Ageing Report</a></li>
+            <li><a href="Autodetracciones.html">Autodetracciones</a></li>
+            <li><a href="CashApp.html">CashApp</a></li>
+
+        </ul>
+    </nav>
+
+    <main class="tool-section">
+        <h1>Ingresos Diferidos</h1>
+
+<h2 class="h2">Genera tu Asiento de Ingresos Diferidos</h2>
+
+
+
+<form id="asientoForm" class="form-asiento">
+
+        <div class="form-group">
+        <label for="tipoAsiento">Tipo de Asiento:</label>
+        <select id="tipoAsiento" required>
+            <option value="asiento">Asiento Manual</option>
+            <option value="extorno">Extorno</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="sector">Sector:</label>
+        <input type="text" id="sector" >
+    </div>
+
+    <div class="form-group">
+        <label for="codeActivity">Code_Activity:</label>
+        <input type="text" id="codeActivity" >
+    </div>
+
+    <div class="form-group">
+        <label for="cecos">Cecos:</label>
+        <input type="text" id="cecos" >
+    </div>
+
+    <div class="form-group">
+        <label for="localidad">Localidad:</label>
+        <input type="text" id="localidad" >
+    </div>
+
+    <div class="form-group">
+        <label for="valor">Valor del Movimiento (DEBE/HABER):</label>
+        <input type="float" id="valor" >
+    </div>
+
+    <div class="form-group">
+        <label for="glosa">Glosa:</label>
+        <input type="text" id="glosa" required>
+    </div>
+    
+    <button type="submit" class="btn-generar">Generar Asiento de Diferido</button>
+</form>
+
+<h2 class="h2">Asiento Generado</h2>
+<table class="tabla-contable" id="tablaGenerada">
+    <thead>
+        <tr>
+            <th>FCode</th>
+            <th>CTA</th>
+            <th>Sector</th>
+            <th>Code_Activity</th>
+            <th>Cecos</th>
+            <th>CL</th>
+            <th>Localidad</th>
+            <th>Intercompany</th>
+            <th>Project</th>
+            <th>Statutory</th>
+            <th>Reserved 1</th>
+            <th>Reserved 2</th>
+            <th>DEBE</th>
+            <th>HABER</th>
+            <th>GLOSA</th>
+        </tr>
+    </thead>
+    <tbody id="asientoBody">
+        </tbody>
+</table>
+
+
+<table class="tabla-contable" id="tablaGenerada">
+    </table>
+<button id="exportarExcel" class="btn-exportar">
+    <i class="fa-solid fa-file-excel"></i> Exportar a Excel
+</button>
+
+
+
+<script src="script2.js"></script>
+</body>
+</html>
