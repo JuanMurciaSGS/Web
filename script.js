@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const codeActivity = esCtaIngreso ? data.codeActivity : "'000000";
         const cecos = esCtaIngreso ? data.cecos : "'0000";
         const localidad = esCtaIngreso ? data.localidad : "'000";
-        const statutory = '8'; 
+        const statutory = 'B'; 
 
         return {
             html: `
