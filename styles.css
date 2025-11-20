@@ -265,6 +265,7 @@ a {
 .h2{
     margin: 10px;
     margin-top: 15px;
+    margin-left: 10px;
 }
 
 .sgs-world-text-2 {
@@ -274,4 +275,135 @@ a {
     margin-right: 15px;
     margin: 15px;
     text-decoration: underline;
+}
+
+.h3{
+    font-size: 20px;
+    font-weight: bold;
+    color: #0a0a0a;
+    margin-right: 20px;
+    margin-left: 20px;
+    margin: 20px;
+    margin-top: 25px;
+}
+
+
+.tabla-contable {
+    /* Estilo general de la tabla */
+    width: 100%;
+    border-collapse: collapse; /* Para que los bordes se fusionen */
+    font-family: Arial, sans-serif;
+    font-size: 10pt;
+}
+
+.tabla-contable thead {
+    /* Fondo azul/verde claro del encabezado */
+    background-color: #f58505; 
+}
+
+.tabla-contable th, .tabla-contable td {
+    /* Estilo de las celdas */
+    border: 1px dotted #f8f7f7; /* Borde punteado suave como en la imagen */
+    padding: 5px;
+    text-align: left; /* Alineación por defecto */
+    white-space: nowrap; /* Evita que el contenido de las celdas se envuelva */
+}
+
+.tabla-contable th {
+    /* Estilo específico de los encabezados */
+    font-weight: bold;
+    color: #f8f8f8; /* Color de texto oscuro */
+    vertical-align: center; /* Asegura que el texto esté en la parte superior si la celda es más alta */
+
+}
+
+/* Alineación de datos contables (DEBE, HABER) a la derecha, generalmente se hace así */
+.tabla-contable td:nth-child(12), /* Columna DEBE */
+.tabla-contable td:nth-child(13) { /* Columna HABER */
+    text-align: right;
+    font-weight: bold; /* Los valores suelen ir en negrita */
+}
+
+/* Fondo verde claro para las filas de datos */
+.tabla-contable tbody tr {
+    background-color: #f5deac;
+}
+
+/* --- Estilos para el Formulario Generador de Asiento --- */
+.form-asiento {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    flex: 1 1 calc(50% - 20px); /* Dos campos por fila en escritorio */
+    display: flex;
+    flex-direction: column;
+    min-width: 250px; /* Ancho mínimo para buena visualización */
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #007bff;
+    font-size: 14px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"] {
+    width: 100%; /* <-- AÑADIDO: Hace que ocupe todo el ancho disponible */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Incluye padding y border en el ancho/alto */
+}
+
+.btn-generar {
+    background-color: #28a745; /* Color verde para acción principal */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+    /* Para que el botón ocupe una fila completa */
+    flex: 1 1 100%; 
+}
+
+.btn-generar:hover {
+    background-color: #1e7e34;
+}
+
+/* Añadir al final de styles.css */
+.btn-exportar {
+    background-color: #20b2aa; /* Verde azulado, color de Excel */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    display: block; /* Ocupa todo el ancho si no hay otro elemento */
+    width: 250px; /* Ancho fijo para que no ocupe toda la línea */
+}
+
+.btn-exportar:hover {
+    background-color: #1a908a;
+}
+
+.btn-exportar i {
+    margin-right: 8px;
 }

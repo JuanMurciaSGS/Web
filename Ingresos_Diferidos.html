@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBS Americas SGS del Perú</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-search-section">
+                <div class="logo">
+                    <span class="sgs-text">SGS</span>
+                </div>
+                <span class="sgs-world-text">GBS Americas - SGS del Perú SAC</span>
+                
+            </div>
+
+        </div>
+    </header>
+
+    <nav class="secondary-nav">
+        <ul class="nav-links">
+            <li><a href="Otc.html">OTC Unbill Revenue</a></li>
+            <li><a href="BadDebt.html">Bad Debt Report</a></li>
+            <li><a href="Unidentify.html">Unidentify Report</a></li>
+            <li><a href="index.html">Ageing Report</a></li>
+            <li><a href="Autodetracciones.html">Autodetracciones</a></li>
+            <li><a href="CashApp.html">CashApp</a></li>
+            <li><a href="Ingresos_Diferidos.html">Ingresos Diferidos</a></li>
+        </ul>
+    </nav>
+
+    <main class="tool-section">
+        <h1>Ingresos Diferidos</h1>
+
+<h2 class="h2">Genera tu Asiento de Ingresos Diferidos</h2>
+
+
+
+<form id="asientoForm" class="form-asiento">
+
+        <div class="form-group">
+        <label for="tipoAsiento">Tipo de Asiento:</label>
+        <select id="tipoAsiento" required>
+            <option value="diferido">Ingreso Diferido</option>
+            <option value="reconocimiento">Reconocimiento de Ingreso</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="sector">Sector:</label>
+        <input type="text" id="sector" >
+    </div>
+
+    <div class="form-group">
+        <label for="codeActivity">Code_Activity:</label>
+        <input type="text" id="codeActivity" >
+    </div>
+
+    <div class="form-group">
+        <label for="cecos">Cecos:</label>
+        <input type="text" id="cecos" >
+    </div>
+
+    <div class="form-group">
+        <label for="localidad">Localidad:</label>
+        <input type="text" id="localidad" >
+    </div>
+
+    <div class="form-group">
+        <label for="valor">Valor del Movimiento (DEBE/HABER):</label>
+        <input type="float" id="valor" >
+    </div>
+
+    <div class="form-group">
+        <label for="glosa">Glosa:</label>
+        <input type="text" id="glosa" required>
+    </div>
+    
+    <button type="submit" class="btn-generar">Generar Asiento de Diferido</button>
+</form>
+
+<h2 class="h2">Asiento Generado</h2>
+<table class="tabla-contable" id="tablaGenerada">
+    <thead>
+        <tr>
+            <th>FCode</th>
+            <th>CTA</th>
+            <th>Sector</th>
+            <th>Code_Activity</th>
+            <th>Cecos</th>
+            <th>CL</th>
+            <th>Localidad</th>
+            <th>Intercompany</th>
+            <th>Project</th>
+            <th>Statutory</th>
+            <th>Reserved 1</th>
+            <th>Reserved 2</th>
+            <th>DEBE</th>
+            <th>HABER</th>
+            <th>GLOSA</th>
+        </tr>
+    </thead>
+    <tbody id="asientoBody">
+        </tbody>
+</table>
+
+
+<table class="tabla-contable" id="tablaGenerada">
+    </table>
+<button id="exportarExcel" class="btn-exportar">
+    <i class="fa-solid fa-file-excel"></i> Exportar a Excel
+</button>
+
+        <h2 class="h2">Conceptos</h2>
+
+        <h3 class="h3">Diferir Ingreso:</h3>
+
+        <p class="sgs-world-text"> Solicitud por parte del usuario para retirar parte o totalidad del ingreso de una factura para ser reconocido en meses posteriores. </p>
+
+        <h3 class="h3">Reconocimiento de Ingreso:</h3>
+        <p class="sgs-world-text">  Surge cuando el usuario que previamente nos pidió diferir el ingreso de una factura y nos indica en que mes se debe devolver el ingreso.</p>
+
+        <p class="sgs-world-text-2">Nota: Cuando la cuenta contable del ingreso (4000) este en el debe se esta difiriendo el ingreso, cuando la cuenta del ingreso (4000) este en el haber se está reconociendo el ingreso. </p>
+
+
+        <h2 class="h2">Tomar siempre en consideraciónlos siguientes aspectos para ingresar los asientos</h2>
+        <li class="sgs-world-text">La moneda relacionada a la factura: Si se desea ingresar el asiento en soles y la solicitud nos la piden en USD se debe convertir a soles según el tipo de cambio del drill.</li>
+        <li class="sgs-world-text">Leer y comprender lo que el usuario nos esta solicitando, si se trata de diferir o reconocer entre otros.</li>
+        <li class="sgs-world-text">Alimentar el cuadro control a la par que se van subiendo los asientos y una vez posteado los asientos verificar con el Trial que este cuadrando.</li>
+      
+        <h2 class="h2">Ejemplo asiento Contable Ingresos Diferidos</h2>
+
+        <table class="tabla-contable">
+    <thead>
+        <tr>
+            <th>FCode</th>
+            <th>CTA</th>
+            <th>Sector</th>
+            <th>Code_Activity</th>
+            <th>Cecos</th>
+            <th>CL</th>
+            <th>Localidad</th>
+            <th>Intercompany</th>
+            <th>Project</th>
+            <th>Statutory</th>
+            <th>Reserved 1</th>
+            <th>Reserved 2</th>
+            <th>DEBE</th>
+            <th>HABER</th>
+            <th>GLOSA</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>F391501</td>
+            <td>4000411</td>
+            <td>'90</td>
+            <td>9053</td>
+            <td>9115</td>
+            <td>'00</td>
+            <td>024</td>
+            <td>0000000</td>
+            <td>00000008</td>
+            <td>8</td>
+            <td>000000</td>
+            <td>000000</td>
+            <td>4313.56</td>
+            <td></td>
+            <td>425050- 1// ECCNE CLARETIANO</td>
+        </tr>
+        <tr>
+            <td>F391501</td>
+            <td>3500600</td>
+            <td>'000</td>
+            <td>'000000</td>
+            <td>'0000</td>
+            <td>'00</td>
+            <td>'000</td>
+            <td>0000000</td>
+            <td>00000008</td>
+            <td>8</td>
+            <td>000000</td>
+            <td>000000</td>
+            <td></td>
+            <td>4313.56</td>
+            <td>425050- 1// ECCNE CLARETIANO</td>
+        </tr>
+
+    </table>
+
+        <h2 class="h2">Ejemplo asiento Contable Reconocimiento de ingreso</h2>
+
+        <table class="tabla-contable">
+    <thead>
+        <tr>
+            <th>FCode</th>
+            <th>CTA</th>
+            <th>Sector</th>
+            <th>Code_Activity</th>
+            <th>Cecos</th>
+            <th>CL</th>
+            <th>Localidad</th>
+            <th>Intercompany</th>
+            <th>Project</th>
+            <th>Statutory</th>
+            <th>Reserved 1</th>
+            <th>Reserved 2</th>
+            <th>DEBE</th>
+            <th>HABER</th>
+            <th>GLOSA</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>F391501</td>
+            <td>4000411</td>
+            <td>'90</td>
+            <td>9053</td>
+            <td>9115</td>
+            <td>'00</td>
+            <td>024</td>
+            <td>0000000</td>
+            <td>00000008</td>
+            <td>8</td>
+            <td>000000</td>
+            <td>000000</td>
+            <td></td>
+            <td>4313.56</td>
+            <td>425050- 1// ECCNE CLARETIANO</td>
+        </tr>
+        <tr>
+            <td>F391501</td>
+            <td>3500600</td>
+            <td>'000</td>
+            <td>'000000</td>
+            <td>'0000</td>
+            <td>'00</td>
+            <td>'000</td>
+            <td>0000000</td>
+            <td>00000008</td>
+            <td>8</td>
+            <td>000000</td>
+            <td>000000</td>
+            <td>4313.56</td>
+            <td></td>
+            <td>425050- 1// ECCNE CLARETIANO</td>
+        </tr>
+
+
+    </tbody>
+</table>
+
+<script src="script.js"></script>
+</body>
+</html>
