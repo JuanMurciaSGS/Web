@@ -294,6 +294,7 @@ a {
     border-collapse: collapse; /* Para que los bordes se fusionen */
     font-family: Arial, sans-serif;
     font-size: 10pt;
+
 }
 
 .tabla-contable thead {
@@ -305,7 +306,7 @@ a {
     /* Estilo de las celdas */
     border: 1px dotted #f8f7f7; /* Borde punteado suave como en la imagen */
     padding: 5px;
-    text-align: left; /* Alineación por defecto */
+    text-align: center; /* Alineación por defecto */
     white-space: nowrap; /* Evita que el contenido de las celdas se envuelva */
 }
 
