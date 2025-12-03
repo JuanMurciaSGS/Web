@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detracciones SUNAT y Archivo Plano - GBS Americas SGS del Perú</title>
+    <link rel="stylesheet" href="styles.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-search-section">
+                <div class="logo">
+                    <span class="sgs-text">SGS</span>
+                </div>
+                <span class="sgs-world-text">GBS Americas - SGS del Perú SAC</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="secondary-nav">
+        <ul class="nav-links">
+            <li><a href="Otc.html">OTC Unbill Revenue</a></li>
+            <li><a href="BadDebt.html">Bad Debt Report</a></li>
+            <li><a href="Ingresos_Diferidos.html">Ingresos Diferidos</a></li>
+            <li><a href="Asientos_Manuales.html">Asientos Manuales</a></li>
+            <li><a href="Unidentify.html">Unidentify Report</a></li>
+            <li><a href="index.html">Ageing Report</a></li>
+            <li><a href="Autodetracciones.html">Autodetracciones</a></li>
+            <li><a href="CashApp.html">CashApp</a></li>
+            <li><a href="Detracciones.html">Detracciones</a></li> 
+        </ul>
+    </nav>
+
+<main class="tool-section" data-report-type="detracciones">
+    <h1>Archivo Detracciones SUNAT</h1>
+
+    
+    <h3>Ingreso SUNAT</h3>
+
+    <p class="h2">Ingresa al siguiente link en una pestaña nueva: <a href="https://www.sunat.gob.pe/sol.html">SUNAT</a></p>
+    
+    
+
+    
+    <h3>Click en ingresar</h3>
+    
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Detracciones/Detracciones 1.png" alt="Ingreso a Sunat" width="200" height="200">
+            </div>
+    
+
+    
+    <h3>Digita los datos que te solicita la pagina</h3>
+
+    <p class="h2">RUC: 20100114349</p>
+    <p class="h2">Usuario: COBR2024</p>
+    <p class="h2">Contraseña: Solicita la contraseña al Senior Accountant</p>
+    
+
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Detracciones/Detracciones 2.png" alt="Datos de ingreso Sunat" width="300" height="300">
+            </div>
+
+    
+
+    <h3>Consulta de Pago de Detracciones</h3>
+
+    <p class="h2">Selecciona la fecha de pago, consultas del mes no mayor a 30 días, siempre hacemos la consulta al día anterior. Damos click en Consultar</p>
+
+
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Detracciones/Detracciones 3.png" alt="Datos de ingreso Sunat" width="600" height="300">
+            </div>
+
+    <h3>Descarga de archivo en Excel</h3>
+
+    <p class="h2">Cuando desaparece el mensaje vamos a la parte de abajo de la página y buscamos el bóton descargar en excel</p>
+
+
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Detracciones/Detracciones 4.png" alt="Datos de ingreso Sunat" width="600" height="300">
+            </div>
+
+    <h3>Buscamos el archivo en la carpeta de descargas de nuestro computador</h3>
+
+    <p class="h2">Abrimos el archivo que descargo la página, seguimos el asistente de Datos en columnas separadas por "," y guardamos nuestro archivo como libro de excel</p>
+    <p class="h2">Realiza una inspección visual que las columnas sean acorde a los nombres</p>
+
+
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Detracciones/Detracciones 4.png" alt="Datos de ingreso Sunat" width="600" height="300">
+            </div>
+
+    <div class="tool-card">
+    <h3>Carga de archivos al aplicativo</h3>
+
+    <p class="h2">👍El archivo que acabas de guardar en excel es el Archivo 1, para que lo cargues en el aplicativo</p>
+    <p class="h2"> 😎El archivo 2 es el archivo de Detracciones del mes, lo encuentras en el sharepoint</p>
+    <p class="h2"> 🌟El aplicativo te genera los datos nuevos que debes cargar en el archivo de Detracciones del mes🌟</p>
+
+    </div>
+
+    <h1>📝 Cruce de Detracciones SUNAT vs. Archivo Plano</h1>
+    <div class="tool-card">
+        <p>Sube el archivo **Detracciones SUNAT (Manual)** y el **Archivo Plano/Maestro** (Ambos en formato Excel .xlsx/.xls) para identificar nuevos registros.</p>
+
+        <div class="file-input-group">
+            <label for="sunatFileInput">Archivo 1: Detracciones SUNAT (Excel .xlsx/.xls)</label>
+            <input type="file" id="sunatFileInput" accept=".xlsx, .xls"> 
+        </div>
+
+        <div class="file-input-group" style="margin-top: 15px;">
+            <label for="planoFileInput">Archivo 2: Archivo Detracciones del Mes (Excel .xlsx/.xls)</label>
+            <input type="file" id="planoFileInput" accept=".xlsx, .xls">
+        </div>
+
+        <button id="processButton" class="blue-button-main" style="margin-top: 25px;">
+            <i class="fas fa-file-excel"></i> 🚀 Procesar y Generar Reporte
+        </button>
+        
+        <div id="statusMessage" style="margin-top: 15px; font-weight: bold;"></div>
+
+        <a id="downloadLink" style="display: none; margin-top: 15px; color: green; text-decoration: underline;" href="#">
+            <i class="fas fa-download"></i> Descargar Archivo de Nuevos Registros
+        </a>
+    </div>
+</main>
+
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="detracciones.js"></script> 
+
+</body>
+</html>
