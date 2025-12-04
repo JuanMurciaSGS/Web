@@ -39,11 +39,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${cecos}</td>
                     <td>'00</td>
                     <td>${localidad}</td>
-                    <td>0000000</td>
-                    <td>00000000</td>
+                    <td>'0000000</td>
+                    <td>'00000000</td>
                     <td>${statutory}</td>
-                    <td>000000</td>
-                    <td>000000</td>
+                    <td>'000000</td>
+                    <td>'000000</td>
                     <td>${valorDebe}</td>
                     <td>${valorHaber}</td>
                     <td>${data.glosa}</td>

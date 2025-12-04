@@ -12,9 +12,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const CRUCE_COLUMN = "Cruce"; // Nombre de la nueva columna
     const PLANO_SHEET_NAME = "SGS DEL PERU S.A.C.";
     
-    // Encabezados esperados para el Archivo 2 (Plano/Maestro)
-    // Se mantiene la estructura original del Archivo 2, sin la columna "Cruce" para la validación.
-    // Sin embargo, si la columna "Cruce" debe ser parte de la estructura para la validación, la agregamos aquí:
+    // ** SOLO LAS COLUMNAS QUE NECESITAN FORMATO NUMÉRICO O FECHA **
+    const CELL_FORMATS = {
+        // Formato para Cantidades o Montos (2 decimales, separador de miles)
+        "Monto de deposito": { type: 'n', format: '#,##0.00' }, 
+        
+        // Formato para Fechas (dd/mm/yyyy)
+        "Fecha Pago": { type: 'n', format: 'dd/mm/yyyy' },
+        "Fecha de Descarga": { type: 'n', format: 'yyyy-mm-dd' }
+        
+        // >> NOTA: Se ha ELIMINADO la columna "Numero de Documento Adquiriente" de esta lista.
+        // Se manejará como texto por defecto.
+    };
+    
     const EXPECTED_PLANO_HEADERS = [
         "Fecha de Descarga",
         "Semana",
@@ -22,15 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
         "Tipo de Cuenta",
         "Numero de Cuenta",
         KEY_COLUMN,
-        // ** NOTA IMPORTANTE: La columna "Cruce" no debe estar aquí si NO existe en el Archivo Plano **
-        // Si el Archivo Plano/Maestro tiene la columna 'Cruce', déjala aquí:
-        // CRUCE_COLUMN,
         "OPERACIÓN ORACLE",
         "Periodo Tributario",
         "RUC Proveedor",
         "Nombre Proveedor",
         "Tipo de Documento Adquiriente",
-        "Numero de Documento Adquiriente",
+        "Numero de Documento Adquiriente", // Columna I
         "Nombre/Razon Social del Adquiriente",
         "Fecha Pago",
         "Monto de deposito",
@@ -42,10 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "Estado"
     ];
 
-    // Se asume que el Archivo 1 (SUNAT) tiene todos los datos que necesitamos, incluyendo las columnas del Archivo 2 (Plano)
-    // excepto la columna "Cruce" que se va a inyectar.
-
-    // --- Lógica Principal: LECTURA, VALIDACIÓN Y CRUCE ---
+    // --- Lógica Principal: LECTURA, VALIDACIÓN Y CRUCE (Se mantiene igual) ---
     processButton.addEventListener('click', async () => {
         statusMessage.textContent = '';
         downloadLink.style.display = 'none';
@@ -63,24 +67,20 @@ document.addEventListener('DOMContentLoaded', () => {
             statusMessage.textContent = '⏳ Leyendo y validando Archivos...';
             statusMessage.style.color = 'blue';
 
-            // 1. Procesar Archivo 1 (SUNAT)
             const sunatData = await readExcelFile(sunatFile);
             if (!sunatData.length || !Object.keys(sunatData[0]).includes(KEY_COLUMN)) {
                 throw new Error(`El Archivo SUNAT no tiene datos válidos o le falta la columna clave '${KEY_COLUMN}'.`);
             }
             console.log(`✅ Archivo 1 (SUNAT) leído. Registros: ${sunatData.length}`);
 
-            // 2. Procesar Archivo 2 (Plano/Maestro)
             const planoData = await readExcelFile(planoFile, PLANO_SHEET_NAME);
             
-            // Validar la estructura del Archivo 2
             const planoHeaders = Object.keys(planoData[0]);
             validateFileStructure(planoHeaders, EXPECTED_PLANO_HEADERS, 'Archivo Plano/Maestro');
             console.log(`✅ Archivo 2 (Plano/Maestro) leído y validado. Registros: ${planoData.length} (Hoja: ${PLANO_SHEET_NAME})`);
 
             statusMessage.textContent = '🔄 Realizando Cruce de Registros...';
 
-            // 3. Realizar el Cruce y añadir la columna "Cruce"
             const newRecords = findNewRecords(sunatData, planoData, KEY_COLUMN, CRUCE_COLUMN);
 
             if (newRecords.length === 0) {
@@ -89,11 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // 4. Exportar los Nuevos Registros
             const fileName = `Nuevos_Registros_Detracciones_${new Date().toISOString().slice(0, 10)}.xlsx`;
-            exportToExcel(newRecords, fileName, sunatData); // Pasamos sunatData para obtener el orden de las columnas.
+            exportToExcel(newRecords, fileName, sunatData, CELL_FORMATS); 
             
-            // 5. Mostrar éxito y enlace de descarga
             statusMessage.textContent = `✅ Cruce finalizado. Se encontraron ${newRecords.length} nuevos registros. ¡Listo para descargar!`;
             statusMessage.style.color = 'green';
             downloadLink.style.display = 'block';
@@ -108,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FUNCIONES DE CRUCE Y EXPORTACIÓN ---
 
     /**
-     * Realiza el cruce y prepara los datos para la exportación inyectando la columna 'Cruce'.
+     * Realiza el cruce y prepara los datos para la exportación.
      */
     function findNewRecords(file1Data, file2Data, keyColumn, cruceColumn) {
         const existingKeys = new Set(
@@ -122,70 +120,107 @@ document.addEventListener('DOMContentLoaded', () => {
             return key.length > 0 && !existingKeys.has(key);
         });
         
-        // 1. Inyectar la columna "Cruce" con valor "Nuevo" en cada registro
         const processedRecords = newRecords.map(record => {
-             // Clonar el registro original
-            const newRecord = { ...record };
-            // Establecer el valor de la columna Cruce
-            newRecord[cruceColumn] = "Nuevo";
-            return newRecord;
+             const newRecord = { ...record };
+             
+             // Conversión del Monto (Asegurar que sea número para el formato)
+             const monto = newRecord['Monto de deposito'];
+             if (monto) {
+                 let cleanMonto = String(monto).replace(/[$,]/g, '').trim();
+                 newRecord['Monto de deposito'] = parseFloat(cleanMonto) || 0;
+             }
+             
+             // ** IMPORTANTE: Aseguramos que "Numero de Documento Adquiriente" sea un string **
+             const docAdquiriente = newRecord['Numero de Documento Adquiriente'];
+             if (docAdquiriente) {
+                 newRecord['Numero de Documento Adquiriente'] = String(docAdquiriente).trim();
+             }
+             
+
+             newRecord[cruceColumn] = "Nuevo";
+             return newRecord;
         });
 
         return processedRecords;
     }
 
     /**
-     * Genera y descarga un archivo Excel manteniendo el orden de las columnas del Archivo 1,
-     * e insertando la columna "Cruce" en la posición solicitada.
+     * Genera y descarga un archivo Excel aplicando formatos numéricos y de fecha.
      */
-    function exportToExcel(data, fileName, sourceData) {
+    function exportToExcel(data, fileName, sourceData, formats) {
         if (data.length === 0) return;
 
-        // 1. Obtener el orden de las columnas del Archivo 1 (sunatData)
-        // Se asume que el primer registro contiene todos los encabezados originales.
+        // 1. Obtener y ordenar los encabezados
         const originalHeaders = Object.keys(sourceData[0]);
-
-        // 2. Determinar la posición de inserción de la columna "Cruce"
         const constanciaIndex = originalHeaders.indexOf(KEY_COLUMN);
         
-        // El nuevo orden de encabezados:
         let orderedHeaders = [...originalHeaders];
-        
         if (constanciaIndex !== -1) {
-            // Insertar "Cruce" justo después de "Numero Constancia"
             orderedHeaders.splice(constanciaIndex + 1, 0, CRUCE_COLUMN);
         } else {
-            // Si no encuentra la columna clave, añade "Cruce" al final (fallback)
             orderedHeaders.push(CRUCE_COLUMN);
         }
         
-        // 3. Mapear los datos para asegurar el orden de las columnas en el Excel
+        // 2. Mapear los datos
         const dataForSheet = data.map(record => {
             let orderedRecord = {};
             orderedHeaders.forEach(header => {
-                // Si la columna es 'Cruce', usa el valor inyectado ('Nuevo').
-                // Para las demás, usa el valor del registro (o cadena vacía si no existe).
                 orderedRecord[header] = record[header] !== undefined ? record[header] : "";
             });
             return orderedRecord;
         });
 
-        // 4. Crear la hoja de cálculo
+        // 3. Crear la hoja de cálculo
         const worksheet = XLSX.utils.json_to_sheet(dataForSheet, { 
-            header: orderedHeaders 
+            header: orderedHeaders,
+            skipHeader: false 
         });
 
+        // 4. APLICAR FORMATO DE FECHAS Y NÚMEROS A LAS CELDAS
+        const range = XLSX.utils.decode_range(worksheet['!ref']);
+        
+        for(let C = range.s.c; C <= range.e.c; ++C) {
+            const headerCellRef = XLSX.utils.encode_cell({ r: range.s.r, c: C });
+            const header = worksheet[headerCellRef]?.v; 
+            
+            const formatInfo = formats[header];
+
+            // Iterar sobre las filas de datos (a partir de la fila 1)
+            for(let R = range.s.r + 1; R <= range.e.r; ++R) { 
+                const cellAddress = { r: R, c: C };
+                const cellRef = XLSX.utils.encode_cell(cellAddress);
+                const cell = worksheet[cellRef];
+
+                if (cell) {
+                    
+                    // A) Aplicar formato de FECHA/NÚMERO (si está en la lista)
+                    if (formatInfo) {
+                        cell.t = formatInfo.type; // Forzar a 'n' (number)
+                        cell.z = formatInfo.format; // Aplicar formato de Excel
+                    } 
+                    
+                    // B) Forzar TIPO TEXTO para la columna específica
+                    else if (header === 'Numero de Documento Adquiriente') {
+                         cell.t = 's'; // Forzar a 's' (string/text)
+                         cell.z = undefined; // Quitar cualquier formato numérico
+                    }
+                    
+                    // C) Si no tiene formato especial, SheetJS usa el tipo inferido o 's'
+                }
+            }
+        }
+
+        // 5. Crear y escribir el libro de trabajo
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Nuevos Registros");
         
-        // Escribir el archivo y forzar la descarga
         XLSX.writeFile(workbook, fileName);
 
         downloadLink.href = "#";
     }
 
 
-    // --- FUNCIONES DE LECTURA Y VALIDACIÓN (Se mantienen las funciones robustas) ---
+    // --- FUNCIONES DE LECTURA Y VALIDACIÓN (Se mantienen las optimizadas) ---
 
     function validateFileStructure(readHeaders, expectedHeaders, fileName) {
         if (readHeaders.length !== expectedHeaders.length) {
@@ -206,8 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Función robusta para leer Archivos Excel (XLSX/XLS)
-     * @param {File} file - El objeto File a leer.
-     * @param {string} [sheetName] - Nombre de la hoja a leer. Si es null/undefined, lee la primera hoja.
+     * Se usa raw: true para conservar tipos (números, fechas seriales).
      */
     function readExcelFile(file, sheetName = null) {
         return new Promise((resolve, reject) => {
@@ -218,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { 
                         type: 'array',
-                        cellDates: false 
+                        cellDates: false // Mantiene las fechas como números seriales
                     }); 
 
                     const targetSheetName = sheetName || workbook.SheetNames[0];
@@ -228,35 +262,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         return reject(new Error(`La hoja '${targetSheetName}' no existe en el archivo.`));
                     }
 
+                    // USAR raw: true para conservar los tipos
                     const json = XLSX.utils.sheet_to_json(worksheet, { 
-                        raw: false, 
+                        raw: true, 
                         defval: "", 
-                        header: 1, 
-                        range: "A1:ZZ10000"
                     });
                     
-                    if (json.length < 2) {
-                        return reject(new Error(`La hoja '${targetSheetName}' está vacía o no tiene encabezados válidos (Fila 1).`));
+                    if (json.length === 0) {
+                        return reject(new Error(`La hoja '${targetSheetName}' no tiene datos.`));
                     }
-
-                    const headers = json[0].map(h => 
-                        String(h)
-                            .trim()
-                            .replace(/\s+/g, ' ')
-                            .trim()
-                    ).filter(h => h.length > 0); 
-
-                    const dataRows = json.slice(1);
                     
-                    const finalData = dataRows.map(row => {
-                        let obj = {};
-                        headers.forEach((header, index) => {
-                            obj[header] = row[index] !== undefined ? String(row[index]).trim() : '';
-                        });
-                        return obj;
-                    }).filter(obj => {
+                    // Filtrar filas completamente vacías
+                    const finalData = json.filter(obj => {
                         const values = Object.values(obj);
-                        return values.length > 0 && values.some(v => v !== '');
+                        return values.length > 0 && values.some(v => String(v).trim() !== '');
                     });
 
                     resolve(finalData);
