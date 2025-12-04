@@ -60,13 +60,11 @@ function processUnidentifyFile(dataArrayBuffer, fileName) {
         const worksheet = workbook.Sheets[sheetName];
         
         // Convertir la hoja a formato Array of Arrays (AoA)
-        // Opciones para manejar fechas correctamente
+        // Usamos cellDates: true para obtener objetos Date de JavaScript
         const allRows = XLSX.utils.sheet_to_json(worksheet, { 
             header: 1, 
-            raw: true,
-            // Convertir celdas de fecha a objetos Date de JavaScript
+            raw: false,
             cellDates: true, 
-            // Formato de fecha para la conversión, si es necesario
             dateNF: 'dd/mm/yyyy' 
         });
 
@@ -80,7 +78,6 @@ function processUnidentifyFile(dataArrayBuffer, fileName) {
         const dataRows = allRows.slice(1);
         
         // === CONFIGURACIÓN DE CLASIFICACIÓN ===
-        // Columna 16 es el índice 15
         const CLASS_COLUMN_INDEX = 15; 
         const CLASS_COLUMN_NAME = headers[CLASS_COLUMN_INDEX];
         
@@ -89,25 +86,28 @@ function processUnidentifyFile(dataArrayBuffer, fileName) {
             statusMessage.style.color = 'red';
             return;
         }
+        
+        // === CONFIGURACIÓN DE TIPOS DE COLUMNAS SOLICITADOS ===
+        const TEXT_COLS = ['Receipt Number'];
+        const DATE_COLS = ['Receipt Date', 'Deposit Date', 'GL Date'];
+        const NUMBER_COLS = ['Receipt Amount', 'Net Amount', 'Unapplied Amount', 'Unidentified Amount'];
 
-        // 1. Análisis y Clasificación de Datos (Similar a Ageing)
+        // Obtener los índices de las columnas por nombre
+        const colIndices = {};
+        headers.forEach((header, index) => {
+            colIndices[header.trim()] = index;
+        });
+
+        // Conjuntos para una búsqueda rápida de índices
+        const dateIndices = DATE_COLS.map(name => colIndices[name]).filter(i => i !== undefined);
+        const numberIndices = NUMBER_COLS.map(name => colIndices[name]).filter(i => i !== undefined);
+        const textIndices = TEXT_COLS.map(name => colIndices[name]).filter(i => i !== undefined);
+        
+        // 1. Análisis y Clasificación de Datos
         const sheetsData = {}; 
-
-        // Índices de las columnas que contienen fechas (6, 14, 15 -> 5, 13, 14)
-        const DATE_INDICES = [5, 13, 14];
 
         dataRows.forEach(row => {
             
-            // Si el valor es un objeto Date (debido a cellDates: true), lo convertimos al formato DD/MM/AAAA
-            DATE_INDICES.forEach(index => {
-                if (row[index] instanceof Date) {
-                    const day = row[index].getDate().toString().padStart(2, '0');
-                    const month = (row[index].getMonth() + 1).toString().padStart(2, '0');
-                    const year = row[index].getFullYear();
-                    row[index] = `${day}/${month}/${year}`;
-                }
-            });
-
             // Usamos String() para asegurar que el valor se pueda usar como clave (nombre de la hoja)
             const classValue = String(row[CLASS_COLUMN_INDEX] || "SIN BANCO"); 
             
@@ -117,14 +117,62 @@ function processUnidentifyFile(dataArrayBuffer, fileName) {
             sheetsData[classValue].push(row);
         });
 
-        // 2. Creación del Nuevo Archivo XLSX con Múltiples Hojas
+        // 2. Creación del Nuevo Archivo XLSX con Múltiples Hojas y Tipado
         const outputWorkbook = XLSX.utils.book_new();
 
         for (const classValue in sheetsData) {
             if (sheetsData.hasOwnProperty(classValue)) {
-                const data = sheetsData[classValue];
-                const ws = XLSX.utils.aoa_to_sheet(data); 
-                // Limitar el nombre a 31 caracteres
+                const data = sheetsData[classValue]; // Array of Arrays (AoA)
+                
+                // Crear hoja. cellDates: true es crucial para mantener los objetos Date en ws.
+                const ws = XLSX.utils.aoa_to_sheet(data, { cellDates: true }); 
+                
+                // Recorrer las celdas y aplicar formato (desde la fila 1, ya que la 0 es el encabezado)
+                for (let R = 1; R < data.length; ++R) {
+                    const row = data[R];
+                    for (let C = 0; C < row.length; ++C) {
+                        const cellAddress = XLSX.utils.encode_cell({ c: C, r: R });
+                        const cell = ws[cellAddress];
+                        
+                        if (!cell || cell.v === undefined || cell.v === null) continue;
+
+                        // 1. Formato de Fecha
+                        if (dateIndices.includes(C)) {
+                            if (cell.v instanceof Date) {
+                                // Convertir el objeto Date de JS a número de serie de fecha de Excel
+                                cell.v = datenum(cell.v); 
+                                cell.t = 'n'; // El tipo de celda es numérico para fechas
+                                // Usamos AAAA para forzar el año a 4 dígitos
+                                cell.z = 'dd/mm/aaaa'; 
+                            } else {
+                                // Si no es un Date object, se mantiene como texto.
+                                cell.t = 's';
+                                cell.v = String(cell.v);
+                            }
+                        } 
+                        // 2. Formato de Número
+                        else if (numberIndices.includes(C)) {
+                            // Limpiamos comas (si existen) y convertimos a flotante
+                            const value = parseFloat(String(cell.v).replace(/,/g, ''));
+                            if (!isNaN(value)) {
+                                cell.v = value; 
+                                cell.t = 'n'; 
+                                cell.z = '#,##0.00'; // Formato con separador de miles y 2 decimales
+                            } else {
+                                cell.t = 's'; 
+                            }
+                        }
+                        // 3. Formato de Texto (Receipt Number)
+                        else if (textIndices.includes(C)) {
+                            // Aseguramos que el valor sea un string y forzamos el formato de texto puro.
+                            const textValue = String(cell.v).trim();
+                            cell.v = textValue; 
+                            cell.t = 's'; 
+                            cell.z = '@'; // Formato de texto puro de Excel para evitar notación científica
+                        }
+                    }
+                }
+                
                 const sheetName = classValue.substring(0, 31); 
                 XLSX.utils.book_append_sheet(outputWorkbook, ws, sheetName);
             }
@@ -215,7 +263,7 @@ function processAgeingFile(fileContent, fileName) {
 // --- LÓGICA ESPECÍFICA PARA EL REPORTE OTC (Original + Reclasificado con Alerta y Suma) ---
 // ----------------------------------------------------------------------
 function processOtcFile(fileContent, fileName) {
-     try {
+      try {
         // 1. Parsear el contenido (datos originales)
         const allRows = fileContent.split('\n')
             .map(line => line.trim())
@@ -315,3 +363,23 @@ function processOtcFile(fileContent, fileName) {
     }
 }
 });
+
+
+// ----------------------------------------------------------------------
+// --- FUNCIÓN DE UTILIDAD REQUERIDA PARA FECHAS (SheetJS) ---
+// ----------------------------------------------------------------------
+
+/**
+ * Convierte un objeto Date de JavaScript en el número de serie decimal de Excel.
+ * @param {Date} v El objeto Date.
+ * @param {boolean} date1904 Usar el sistema de fechas de 1904 (opcional, por defecto false).
+ * @returns {number} Número de serie de Excel.
+ */
+function datenum(v, date1904) {
+	if(date1904) v+=1462;
+	var epoch = v.getTime(); // ¡Usamos .getTime() para una conversión precisa y corregida!
+	
+	// Calcula la diferencia de tiempo desde el 30 de diciembre de 1899,
+	// que es el día 0 en el sistema de fechas de Excel.
+	return (epoch - new Date(Date.UTC(1899, 11, 30))) / (24 * 60 * 60 * 1000);
+}
