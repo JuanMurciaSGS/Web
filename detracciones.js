@@ -21,23 +21,28 @@ document.addEventListener('DOMContentLoaded', () => {
         "Fecha Pago": { type: 'n', format: 'dd/mm/yyyy' },
         "Fecha de Descarga": { type: 'n', format: 'yyyy-mm-dd' }
         
-        // >> NOTA: Se ha ELIMINADO la columna "Numero de Documento Adquiriente" de esta lista.
-        // Se manejará como texto por defecto.
+        // Las columnas de RUC/Constancias se manejan aparte para forzar el tipo 's'.
     };
     
+    // ** LISTA DE COLUMNAS QUE DEBEN SER FORZADAS A TIPO TEXTO ('s') **
+    const TEXT_COLUMNS = [
+        "Numero Constancia", // <--- ¡NUEVA COLUMNA A FORZAR A TEXTO!
+        "Numero de Documento Adquiriente"
+    ];
+
     const EXPECTED_PLANO_HEADERS = [
         "Fecha de Descarga",
         "Semana",
         "Nº",
         "Tipo de Cuenta",
         "Numero de Cuenta",
-        KEY_COLUMN,
+        KEY_COLUMN, // Columna C: Numero Constancia
         "OPERACIÓN ORACLE",
         "Periodo Tributario",
         "RUC Proveedor",
         "Nombre Proveedor",
         "Tipo de Documento Adquiriente",
-        "Numero de Documento Adquiriente", // Columna I
+        "Numero de Documento Adquiriente", 
         "Nombre/Razon Social del Adquiriente",
         "Fecha Pago",
         "Monto de deposito",
@@ -90,7 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const fileName = `Nuevos_Registros_Detracciones_${new Date().toISOString().slice(0, 10)}.xlsx`;
-            exportToExcel(newRecords, fileName, sunatData, CELL_FORMATS); 
+            // Pasamos la nueva lista TEXT_COLUMNS
+            exportToExcel(newRecords, fileName, sunatData, CELL_FORMATS, TEXT_COLUMNS); 
             
             statusMessage.textContent = `✅ Cruce finalizado. Se encontraron ${newRecords.length} nuevos registros. ¡Listo para descargar!`;
             statusMessage.style.color = 'green';
@@ -130,13 +136,18 @@ document.addEventListener('DOMContentLoaded', () => {
                  newRecord['Monto de deposito'] = parseFloat(cleanMonto) || 0;
              }
              
+             // ** IMPORTANTE: Aseguramos que "Numero Constancia" sea un string **
+             const numConstancia = newRecord['Numero Constancia'];
+             if (numConstancia) {
+                 newRecord['Numero Constancia'] = String(numConstancia).trim();
+             }
+
              // ** IMPORTANTE: Aseguramos que "Numero de Documento Adquiriente" sea un string **
              const docAdquiriente = newRecord['Numero de Documento Adquiriente'];
              if (docAdquiriente) {
                  newRecord['Numero de Documento Adquiriente'] = String(docAdquiriente).trim();
              }
              
-
              newRecord[cruceColumn] = "Nuevo";
              return newRecord;
         });
@@ -146,8 +157,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Genera y descarga un archivo Excel aplicando formatos numéricos y de fecha.
+     * @param {Array<Object>} data - Datos a exportar.
+     * @param {string} fileName - Nombre del archivo.
+     * @param {Array<Object>} sourceData - Datos fuente para el orden de encabezados.
+     * @param {Object} formats - Mapa de formatos numéricos/fecha.
+     * @param {Array<string>} textColumns - Lista de columnas a forzar a texto.
      */
-    function exportToExcel(data, fileName, sourceData, formats) {
+    function exportToExcel(data, fileName, sourceData, formats, textColumns) {
         if (data.length === 0) return;
 
         // 1. Obtener y ordenar los encabezados
@@ -176,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
             skipHeader: false 
         });
 
-        // 4. APLICAR FORMATO DE FECHAS Y NÚMEROS A LAS CELDAS
+        // 4. APLICAR FORMATO DE FECHAS, NÚMEROS Y TEXTO FORZADO
         const range = XLSX.utils.decode_range(worksheet['!ref']);
         
         for(let C = range.s.c; C <= range.e.c; ++C) {
@@ -184,6 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const header = worksheet[headerCellRef]?.v; 
             
             const formatInfo = formats[header];
+            const isTextColumn = textColumns.includes(header); // Verificar si es columna de texto forzado
 
             // Iterar sobre las filas de datos (a partir de la fila 1)
             for(let R = range.s.r + 1; R <= range.e.r; ++R) { 
@@ -193,19 +210,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (cell) {
                     
-                    // A) Aplicar formato de FECHA/NÚMERO (si está en la lista)
+                    // A) Aplicar formato de FECHA/NÚMERO (si está en la lista de formats)
                     if (formatInfo) {
                         cell.t = formatInfo.type; // Forzar a 'n' (number)
                         cell.z = formatInfo.format; // Aplicar formato de Excel
                     } 
                     
-                    // B) Forzar TIPO TEXTO para la columna específica
-                    else if (header === 'Numero de Documento Adquiriente') {
+                    // B) Forzar TIPO TEXTO para las columnas específicas
+                    else if (isTextColumn) {
                          cell.t = 's'; // Forzar a 's' (string/text)
                          cell.z = undefined; // Quitar cualquier formato numérico
                     }
                     
-                    // C) Si no tiene formato especial, SheetJS usa el tipo inferido o 's'
+                    // C) Si no tiene formato especial, SheetJS usa el tipo inferido
                 }
             }
         }
@@ -290,6 +307,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Funciones que no se usan en este paso:
     function parseCsvData() { return []; }
 });
