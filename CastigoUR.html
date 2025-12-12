@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBS Americas SGS del Perú</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-search-section">
+                <div class="logo">
+                    <span class="sgs-text">SGS</span>
+                </div>
+                <span class="sgs-world-text">GBS Americas - SGS del Perú SAC</span>
+                
+            </div>
+
+        </div>
+    </header>
+
+    <nav class="secondary-nav">
+        <ul class="nav-links">
+            <li><a href="Otc.html">OTC Unbill Revenue</a></li>
+            <li><a href="BadDebt.html">Bad Debt Report</a></li>
+            <li><a href="Ingresos_Diferidos.html">Ingresos Diferidos</a></li>
+            <li><a href="Asientos_Manuales.html">Asientos Manuales</a></li>
+            <li><a href="Unidentify.html">Unidentify Report</a></li>
+            <li><a href="index.html">Ageing Report</a></li>
+            <li><a href="Autodetracciones.html">Autodetracciones</a></li>
+            <li><a href="CashApp.html">CashApp</a></li>
+            <li><a href="Detracciones.html">Detracciones</a></li>
+            <li><a href="CastigoUR.html">Castigo UR</a></li> 
+        </ul>
+    </nav>
+
+    <main class="tool-section">
+        <h1>Castigo Unbill Revenue</h1>
+
+        <h2 class="h2">Descarga reporte en Oracle</h2>
+
+        <p class="sgs-world-text">1. Desde Oracle, se debe ejecutar el reporte con fecha del día: Request - Submit New Request - SGS Order Lines Summary Report - </p>
+        <p class=".sgs-text">Vamos a descargar 3 reportes con fechas desde el año 2023, tal como se ve en la imagen. Primero 2023, luego 2024 y luego 2025. Tener en cuenta que este proceso puede tardar entre 3 o 4 horas. Se debe correr el reporte en el momento de la confirmación de cierre de Billing.</p>
+        
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Castigo/Castigo 1.png" alt="Summary parametros de descarga" width="500" height="400">
+            </div>
+
+        <p class="sgs-world-text">2. En el momento que descarga, vamos a Actions - Zip and Download Output, el sistema descarga una carpeta comprimida, y en esta hay un archivo de excel.  </p>
+        <p class=".sgs-text">Vamos a descargar los 3 reportes y lo vamos a guardar en la carpeta Python - Castigo Unbill Revenue - Castigo UR. Esto con el fin de realizar el analisis de datos, la limpieza, trasformación y extracción de lo que necesitamos para hacer el castigo. Esto nos asegura tener un archivo limpio y manejable para hacer los cruces de información.</p>
+
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Castigo/Castigo 2.png" alt="Carpeta para los Summarys" width="600" height="300">
+            </div>
+
+        <p class="sgs-world-text">3. Traemos el archivo del Oct aprobado para el cierre.  </p>
+        <p class=".sgs-text">Vamos a copiar el archivo del Otc y lo vamos a guardar en la carpeta Python - Castigo Unbill Revenue - OTC. Esto con el fin de realizar el analisis de datos, la limpieza, trasformación y extracción de lo que necesitamos para hacer el castigo. Esto nos asegura tener un archivo limpio y manejable para hacer los cruces de información.</p>
+
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Castigo/Castigo 3.png" alt="Carpeta para OTC" width="600" height="300">
+            </div>
+
+        <p class="sgs-world-text">4. El primer script de Python que debemos correr es <span class="sgs-world-text-2">script_consolidar</span></p>
+        <p class=".sgs-text">Al ejecutar este Script nos va a generar un archivo de excel llamado Reporte_Consolidado_Final que vamos a dejar en la carpeta.</p>
+
+
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Castigo/Castigo 5.png" alt="Script Python Consolidar" width="600" height="300">
+            </div>
+
+        <p class="sgs-world-text">5. El segundo script de Python que debemos correr es <span class="sgs-world-text-2">script_otc</span></p>
+        <p class=".sgs-text">Al ejecutar este Script nos va a generar un archivo de excel llamado Reporte_OTC_Concatenado que vamos a dejar en la carpeta.</p>
+
+
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Castigo/Castigo 6.png" alt="Script Python OTC" width="600" height="300">
+            </div>
+
+        <p class="sgs-world-text">6. El tercer script de Python que debemos correr es <span class="sgs-world-text-2">script_cruce</span></p>
+        <p class=".sgs-text">Al ejecutar este Script nos va a generar un archivo de excel llamado Reporte_Final_CRUZADO_Y_CALCULADO_FILTRADO que vamos a dejar en la carpeta.</p>
+
+
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Castigo/Castigo 7.png" alt="Script Python cruce" width="600" height="300">
+            </div>
+
+        <p class="sgs-world-text">7. El reporte que genera es el final del castigo calculado. Listo para enviar a su aprobación.</p>
+
+
+</body>
+</html>
