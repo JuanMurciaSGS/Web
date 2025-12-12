@@ -87,10 +87,28 @@
             <img src="Imagenes Castigo/Castigo 7.png" alt="Script Python cruce" width="600" height="300">
             </div>
 
-        <p class="sgs-world-text">7. El reporte que genera es el final del castigo calculado. Listo para enviar a su aprobación.</p>
+        <p class="sgs-world-text">7. En el reporte que genera solo tenemos que filtrar el archivo por el CUSTOMER_NAME, eliminar todas las Filiales, empresas que en su nombre empiezan con F y las de Estudios Tecnicos.</p>
+
+        <p class="sgs-world-text">8. El reporte con los cambios es el final del castigo calculado. Listo para enviar a su aprobación.</p>
 
         <hr></hr>
 
+        <p class="sgs-world-text">9. Cuando tengamos la aprobación del Castigo. Vamos a correr el script de Python <span class="sgs-world-text-2">generador_asientos</span></p>
+        <p class=".sgs-text">Este nos va a generar los asientos contables de las cuentas 1651111 y 1651912 en PEN y USD respectivamente, ahora lo que tienes que hacer es duplicar el asiento 1651111 (son las hojas USD y PEN del archivo generado de asientos respectivamente) y cambiarle la cuenta por la 1661120 para generar el tercer asiento.</p>
+
+
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Castigo/Castigo 8.png" alt="Script Python Asientos" width="600" height="300">
+            </div>
+
+        <p class="sgs-world-text">10. El último asiento que vamos a crear es el de la cuenta 5549416. Para ello vamos a copiar el asiento de la cuenta 1651912. (Hoja USD_DB y PEN_DB del archivo generado)</p>
+        <p class=".sgs-text">En este asiento vamos a borrar la información de las columnas Activity y Cost Level. Y con un cruce entre el listado de Cecos actualizado vamos a buscar cada uno de los datos por Cost Center y Location</p>
+
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Castigo/Castigo 9.png" alt="Script Python Asientos" width="600" height="300">
+            </div>
+
+        <p class="sgs-world-text">11. Terminado el cruce, vamos a tener los cuatro asientos del castigo para subir a Oracle por WebAdi. 🥳🥳</p>
 
 </body>
 </html>
