@@ -87,15 +87,32 @@
 
             <div class="contenedor-imagen"> 
             <img src="Imagenes BadDebt/Cecos 7.png" alt="Query Bad Debt Report" width="300" height="300">
-            </div>        
+            </div>    
+            
+        <p class="sgs-world-text">9. Para realizar el cálculo vamos a tener en cuenta la tasa de cambio del día del cierre. Esta será confirmada por el equipo local.
+
+        Después de generado nuestro reporte, verificamos que el query ejecute la siguiente opción de incluir una columna entre la columna BO “Castigo Acumulado (PEN) y la columna BP Glosa. Para incluir la columna “Castigo Calculado Tasa del cierre” quedando de la siguiente manera.
+        </p>
+
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes BadDebt/Columna Castigo Nueva.png" alt="Columna Castigo Nueva" width="600" height="300">
+            </div>  
+
+        <p class="sgs-world-text">En la columna “Castigo Calculado Tasa del cierre” vamos a calcular el castigo con la siguiente formula, teniendo en cuenta que la tasa de cambio que vamos a utilizar que esta en rojo, la debe confirmar el equipo local :
+
+        =SI([@Moneda]="PEN";[@[Saldo Pdte.]]*[@[% Castigo]];([@[Saldo Pdte.]]*3.36685)*[@[% Castigo]])
+
+        Copiamos la formula en todas las columnas incluyendo las letras.
+
+        </p>
     
-        <p class="sgs-world-text">9. El la hoja Resumen se van a actualizar las 3 tablas dinamicas.</p>
+        <p class="sgs-world-text">10. El la hoja Resumen se van a actualizar las 3 tablas dinamicas.</p>
 
             <div class="contenedor-imagen"> 
             <img src="Imagenes BadDebt/td 8.png" alt="Query Bad Debt Report" width="600" height="300">
             </div> 
 
-        <p class="sgs-world-text">10. Se envia el correo a las personas encargadas para su aprobación, indicando el valor del Bad Debt según la tabla dinamica.</p>
+        <p class="sgs-world-text">11. Se envia el correo a las personas encargadas para su aprobación, indicando el valor del Bad Debt según la tabla dinamica.</p>
 
         
         
