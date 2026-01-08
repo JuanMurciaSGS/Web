@@ -130,7 +130,7 @@
         'COST CENTER',
         'LOCATION',
         'Glosa',
-        'Castigo moneda original',
+        'Castigo Calculado Tasa del cierre',
         'Moneda' 
     ];
 
@@ -178,10 +178,10 @@
                 let dataRows = jsonSheet.slice(1);
 
                 // Obtener el índice de la columna a filtrar y ordenar
-                const castigoIndex = headers.map(h => String(h).trim()).indexOf('Castigo moneda original');
+                const castigoIndex = headers.map(h => String(h).trim()).indexOf('Castigo Calculado Tasa del cierre');
 
                 if (castigoIndex === -1) {
-                    messageDiv.textContent = '❌ Error: La columna "Castigo moneda original" no fue encontrada en el archivo.';
+                    messageDiv.textContent = '❌ Error: La columna "Castigo Calculado Tasa del cierre" no fue encontrada en el archivo.';
                     messageDiv.style.backgroundColor = '#f8d7da';
                     messageDiv.style.color = '#721c24';
                     return;
@@ -196,7 +196,7 @@
                 });
                 const filteredLength = dataRows.length;
                 
-                // --- 2. ORDENAR LOS DATOS por "Castigo moneda original" (de menor a mayor) ---
+                // --- 2. ORDENAR LOS DATOS por "Castigo Calculado Tasa del cierre" (de menor a mayor) ---
                 dataRows.sort((a, b) => {
                     // Se asegura que los valores se interpreten como números
                     const valA = Number(String(a[castigoIndex]).replace(/[^0-9.-]/g, '')) || 0;
@@ -308,7 +308,7 @@
             newRow['RESERVED 1'] = '000000';
             newRow['RESERVED 2'] = '000000';
             newRow['DEBE'] = '0'; // Valor fijo que agregaste en el script que enviaste
-            newRow['Castigo moneda original'] = getOriginalValue('Castigo moneda original', row);
+            newRow['Castigo Calculado Tasa del cierre'] = getOriginalValue('Castigo Calculado Tasa del cierre', row);
             newRow['Glosa'] = getOriginalValue('Glosa', row);
             
             // ************************************************
