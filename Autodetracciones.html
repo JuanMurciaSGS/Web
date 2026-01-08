@@ -38,12 +38,108 @@
     </nav>
 
         <main class="tool-section">
+
+            <h1>Autodetracciones</h1>
+
+            <p class="sgs-world-text">1. Desde Oracle, se debe ejecutar el reporte con fecha del día: Request - Submit New Request - SGS AR Applied Receipts Register TEXT (ALL) - </p>
+
+            <p class="sgs-world-text">Importante que las fechas de aplicación sean las del mes que se quiere bajar el reporte - </p>
+        
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Autodetracciones/Reporte 1.png" alt="Reporte Oracle" width="800" height="300">
+            </div>
+
+            <p class="sgs-world-text">2. En el momento que descarga, vamos a Actions - Zip and Download Output, el sistema descarga una carpeta comprimida, y en esta hay un archivo de texto.  </p>
+
+            <p class="sgs-world-text">La información de este archivo lo vamos a copiar en un archivo en excel llamado SGS Autodetracciones que se encuentra en la carpeta python. Copia y pega la información manteniendo el encabezado del archivo como guía.</p>
+
+            <p class="sgs-world-text">3. Ten presente que desde la columna AD debemos agregar 4 columnas. La primera la llamamos XXX, la segunda IMP, la tercera APLIC y la cuarta %. Recuerda la guia del archivo. Lo que vas a hacer es cortar la información y correrla las 4 columnas.</p>
+            
+            <div class="contenedor-imagen"> 
+            <img src="Imagenes Autodetracciones/Reporte 2.png" alt="Reporte Oracle" width="800" height="300">
+            </div>
+
+            <p class="sgs-world-text">4. Para la primera columna XXX vamos a hacer la siguiente formula: ="F7100"&TEXTO(AD2;"000000").</p>
+
+            <p class="sgs-world-text">5. Para la segunda columna IMP es igual a la Columna AO del archivo.</p>
+
+            <p class="sgs-world-text">6. Para la tercera columna APLIC es igual a la Columna AA del archivo.</p>
+
+            <p class="sgs-world-text">7. Para la cuarta columna % vamos a hacer la siguiente formula: =REDONDEAR(AG2/AF2;2)</p>
+
+            <p class="sgs-world-text">8. Vamos a guardar el excel y se ejectuta el aplicativo Python</p>
+
         <h2 class="">Pulsa el siguiente botón para realizar el Archivo</h2>
         <div class="tool-card">
             <div class = "blue-button-main">
         <a href="https://autodetracciones.onrender.com" target="_blank">App de Autodetracciones</a>
         </div>
         </div>
+
+        <p class="sgs-world-text">9. Cuando ejecute el archivo te va entregar un archivo llamado SGS Autodetracciones_filtrado_final. Donde se encuentra la información por hojas. La hoja AUTODETRACIONES es la información ya seleccionada de las facturas que cumplen con la primera regla de pagos al 100% en PEN y USD.</p>
+
+        <div class="contenedor-imagen"> 
+        <img src="Imagenes Autodetracciones/Reporte 3.png" alt="Reporte Oracle" width="800" height="300">
+        </div>
+
+        <p class="sgs-world-text">10. En las hojas PEN y USD se encuentran todas las facturas que vamos a hacer validación una a una.</p>
+
+        <p class="sgs-world-text">11. Las reglas son las siguientes:</p>
+
+        <p class="sgs-world-text">Si la Factura esta Open, se elimina.</p>
+
+        <div class="contenedor-imagen"> 
+        <img src="Imagenes Autodetracciones/Reporte 4.png" alt="Reporte Oracle" width="800" height="300">
+        </div>
+
+
+        <p class="sgs-world-text">Si la Factura tiene pago en Banco de la nación, se elimina</p>
+
+        <div class="contenedor-imagen"> 
+        <img src="Imagenes Autodetracciones/Reporte 5.png" alt="Reporte Oracle" width="800" height="300">
+        </div>
+
+        <p class="sgs-world-text">Si el cliente utiliza notas de crédito a favor y cancela el saldo restante si aplica para autodetraccion, siempre y cuando no haya cancelado en el banco de la nación</p>
+
+        <div class="contenedor-imagen"> 
+        <img src="Imagenes Autodetracciones/Reporte 6.png" alt="Reporte Oracle" width="800" height="300">
+        </div>
+
+        <p class="sgs-world-text">Si la Factura es de filiales y no tiene IGV, se elimina</p>
+
+        <div class="contenedor-imagen"> 
+        <img src="Imagenes Autodetracciones/Reporte 7.png" alt="Reporte Oracle" width="400" height="300">
+        </div>
+
+        <p class="sgs-world-text">Solo se pasan a la hoja AUTODETRACCIONES facturas que tengan pagos al 100% en diferentes recibos de bancos comerciales.</p>
+
+        <div class="contenedor-imagen"> 
+        <img src="Imagenes Autodetracciones/Reporte 8.png" alt="Reporte Oracle" width="800" height="300">
+        </div>
+
+        <p class="sgs-world-text sgs-world-text-2">Cuando se termine de hacer la validación de cada una de las hojas y se haya pasado la información Por favor asegurarse que en la hoja AUTODETRACCIONES no haya duplicados y se haga el cruce con el archivo 00. SGS_Autodetracciones Control para sacar todas las facturas ya emitidas por Autodetraccion.</p>
+
+    <p class="sgs-world-text">Se arma el archivo agragando los campos Cliente, RUC, Factura, Fecha de emisión, moneda, importe facturado y tipo de cambio SUNAT.</p>
+
+        <div class="contenedor-imagen"> 
+        <img src="Imagenes Autodetracciones/Reporte 9.png" alt="Reporte Oracle" width="900" height="300">
+        </div>
+
+    <p class="sgs-world-text">Se calcula el valor de la Detracción multiplicando si es PEN el INVOICE_AMOUNT * 0.12.</p>
+
+    <p class="sgs-world-text">Se calcula el valor de la Detracción multiplicando si es USD el (INVOICE_AMOUNT * 0.12)*TIPO DE CAMBIO</p>
+
+
+        <div class="contenedor-imagen"> 
+        <img src="Imagenes Autodetracciones/Reporte 10.png" alt="Reporte Oracle" width="400" height="300">
+        </div>
+
+    <p class="sgs-world-text">Se redondea el valor total de la Detracción redondeando a 0, se envia correo reportando las autodetracciones</p>
+
+        <div class="contenedor-imagen"> 
+        <img src="Imagenes Autodetracciones/Reporte 11.png" alt="Reporte Oracle" width="900" height="300">
+        </div>
+
 </main>
 
 </body>

@@ -98,11 +98,12 @@
             <img src="Imagenes BadDebt/Columna Castigo Nueva.png" alt="Columna Castigo Nueva" width="600" height="300">
             </div>  
 
-        <p class="sgs-world-text">En la columna “Castigo Calculado Tasa del cierre” vamos a calcular el castigo con la siguiente formula, teniendo en cuenta que la tasa de cambio que vamos a utilizar que esta en rojo, la debe confirmar el equipo local :
+        <p class="sgs-world-text">En la columna “Castigo Calculado Tasa del cierre” vamos a calcular el castigo con la siguiente formula, teniendo en cuenta que la tasa de cambio que vamos a utilizar (esta en la multiplicación *3.36685 de la formula), la debe confirmar el equipo local : </p>
 
-        =SI([@Moneda]="PEN";[@[Saldo Pdte.]]*[@[% Castigo]];([@[Saldo Pdte.]]*3.36685)*[@[% Castigo]])
+        <p class="sgs-world-text">=SI([@Moneda]="PEN";[@[Saldo Pdte.]]*[@[% Castigo]];([@[Saldo Pdte.]]*3.36685)*[@[% Castigo]]) </p>
 
-        Copiamos la formula en todas las columnas incluyendo las letras.
+        
+        <p class="sgs-world-text">Copiamos la formula en todas las columnas incluyendo las letras.
 
         </p>
     
@@ -113,6 +114,10 @@
             </div> 
 
         <p class="sgs-world-text">11. Se envia el correo a las personas encargadas para su aprobación, indicando el valor del Bad Debt según la tabla dinamica.</p>
+
+             <div class="contenedor-imagen"> 
+            <img src="Imagenes BadDebt/Correo.png" alt="Correo" width="600" height="300">
+            </div> 
 
         
         
