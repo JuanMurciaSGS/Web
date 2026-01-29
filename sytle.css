@@ -1,0 +1,66 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px 20px;
+    border-bottom: 2px solid #ddd;
+}
+
+.logo {
+    height: 50px;
+}
+
+nav {
+    flex: 1;
+    text-align: center;
+}
+
+.menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    gap: 20px;
+}
+
+.menu li a {
+    text-decoration: none;
+    color: orange;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.menu li a:hover {
+    color: black;
+}
+
+main {
+    padding: 40px 20px;
+}
+
+button {
+    background-color: orange;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: black;
+}
+
+#loadingMessage {
+    margin-top: 20px;
+    font-weight: bold;
+    color: #333;
+}
