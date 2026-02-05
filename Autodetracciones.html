@@ -11,12 +11,10 @@
 
     <header class="main-header">
         <div class="header-container">
-            <div class="logo-search-section">
-                <div class="logo">
-                    <span class="sgs-text">SGS</span>
-                </div>
+            <div class="contenedor-imagen">
+                <img src="Images/SGS_Logo.png" alt="SGS Logo" class="logo-img">
                 <span class="sgs-world-text">GBS Americas - SGS del Perú SAC</span>
-                
+
             </div>
 
         </div>
@@ -46,7 +44,7 @@
 
             <p class="sgs-world-text">Importante que las fechas de aplicación sean las del mes que se quiere bajar el reporte - </p>
         
-            <div class="contenedor-imagen"> 
+            <div class="contenedor-imagen-2"> 
             <img src="Imagenes Autodetracciones/Reporte 1.png" alt="Reporte Oracle" width="800" height="300">
             </div>
 
@@ -56,7 +54,7 @@
 
             <p class="sgs-world-text">3. Ten presente que desde la columna AD debemos agregar 4 columnas. La primera la llamamos XXX, la segunda IMP, la tercera APLIC y la cuarta %. Recuerda la guia del archivo. Lo que vas a hacer es cortar la información y correrla las 4 columnas.</p>
             
-            <div class="contenedor-imagen"> 
+            <div class="contenedor-imagen-2"> 
             <img src="Imagenes Autodetracciones/Reporte 2.png" alt="Reporte Oracle" width="800" height="300">
             </div>
 
@@ -79,7 +77,7 @@
 
         <p class="sgs-world-text">9. Cuando ejecute el archivo te va entregar un archivo llamado SGS Autodetracciones_filtrado_final. Donde se encuentra la información por hojas. La hoja AUTODETRACIONES es la información ya seleccionada de las facturas que cumplen con la primera regla de pagos al 100% en PEN y USD.</p>
 
-        <div class="contenedor-imagen"> 
+        <div class="contenedor-imagen-2"> 
         <img src="Imagenes Autodetracciones/Reporte 3.png" alt="Reporte Oracle" width="800" height="300">
         </div>
 
@@ -89,32 +87,32 @@
 
         <p class="sgs-world-text">Si la Factura esta Open, se elimina.</p>
 
-        <div class="contenedor-imagen"> 
+        <div class="contenedor-imagen-2"> 
         <img src="Imagenes Autodetracciones/Reporte 4.png" alt="Reporte Oracle" width="800" height="300">
         </div>
 
 
         <p class="sgs-world-text">Si la Factura tiene pago en Banco de la nación, se elimina</p>
 
-        <div class="contenedor-imagen"> 
+        <div class="contenedor-imagen-2"> 
         <img src="Imagenes Autodetracciones/Reporte 5.png" alt="Reporte Oracle" width="800" height="300">
         </div>
 
         <p class="sgs-world-text">Si el cliente utiliza notas de crédito a favor y cancela el saldo restante si aplica para autodetraccion, siempre y cuando no haya cancelado en el banco de la nación</p>
 
-        <div class="contenedor-imagen"> 
+        <div class="contenedor-imagen-2"> 
         <img src="Imagenes Autodetracciones/Reporte 6.png" alt="Reporte Oracle" width="800" height="300">
         </div>
 
         <p class="sgs-world-text">Si la Factura es de filiales y no tiene IGV, se elimina</p>
 
-        <div class="contenedor-imagen"> 
+        <div class="contenedor-imagen-2"> 
         <img src="Imagenes Autodetracciones/Reporte 7.png" alt="Reporte Oracle" width="400" height="300">
         </div>
 
         <p class="sgs-world-text">Solo se pasan a la hoja AUTODETRACCIONES facturas que tengan pagos al 100% en diferentes recibos de bancos comerciales.</p>
 
-        <div class="contenedor-imagen"> 
+        <div class="contenedor-imagen-2"> 
         <img src="Imagenes Autodetracciones/Reporte 8.png" alt="Reporte Oracle" width="800" height="300">
         </div>
 
@@ -122,7 +120,7 @@
 
     <p class="sgs-world-text">Se arma el archivo agragando los campos Cliente, RUC, Factura, Fecha de emisión, moneda, importe facturado y tipo de cambio SUNAT.</p>
 
-        <div class="contenedor-imagen"> 
+        <div class="contenedor-imagen-2"> 
         <img src="Imagenes Autodetracciones/Reporte 9.png" alt="Reporte Oracle" width="900" height="300">
         </div>
 
@@ -131,13 +129,13 @@
     <p class="sgs-world-text">Se calcula el valor de la Detracción multiplicando si es USD el (INVOICE_AMOUNT * 0.12)*TIPO DE CAMBIO</p>
 
 
-        <div class="contenedor-imagen"> 
+        <div class="contenedor-imagen-2"> 
         <img src="Imagenes Autodetracciones/Reporte 10.png" alt="Reporte Oracle" width="400" height="300">
         </div>
 
     <p class="sgs-world-text">Se redondea el valor total de la Detracción redondeando a 0, se envia correo reportando las autodetracciones</p>
 
-        <div class="contenedor-imagen"> 
+        <div class="contenedor-imagen-2"> 
         <img src="Imagenes Autodetracciones/Reporte 11.png" alt="Reporte Oracle" width="900" height="300">
         </div>
 

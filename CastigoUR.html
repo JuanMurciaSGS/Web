@@ -11,12 +11,10 @@
 
     <header class="main-header">
         <div class="header-container">
-            <div class="logo-search-section">
-                <div class="logo">
-                    <span class="sgs-text">SGS</span>
-                </div>
+            <div class="contenedor-imagen">
+                <img src="Images/SGS_Logo.png" alt="SGS Logo" class="logo-img">
                 <span class="sgs-world-text">GBS Americas - SGS del Perú SAC</span>
-                
+
             </div>
 
         </div>
@@ -46,21 +44,21 @@
         <p class="sgs-world-text">1. Desde Oracle, se debe ejecutar el reporte con fecha del día: Request - Submit New Request - SGS Order Lines Summary Report - </p>
         <p class=".sgs-text">Vamos a descargar 3 reportes con fechas desde el año 2023, tal como se ve en la imagen. Primero 2023, luego 2024 y luego 2025. Tener en cuenta que este proceso puede tardar entre 3 o 4 horas. Se debe correr el reporte en el momento de la confirmación de cierre de Billing.</p>
         
-            <div class="contenedor-imagen"> 
+            <div class="contenedor-imagen-2"> 
             <img src="Imagenes Castigo/Castigo 1.png" alt="Summary parametros de descarga" width="500" height="400">
             </div>
 
         <p class="sgs-world-text">2. En el momento que descarga, vamos a Actions - Zip and Download Output, el sistema descarga una carpeta comprimida, y en esta hay un archivo de excel.  </p>
         <p class=".sgs-text">Vamos a descargar los 3 reportes y lo vamos a guardar en la carpeta Python - Castigo Unbill Revenue - Castigo UR. Esto con el fin de realizar el analisis de datos, la limpieza, trasformación y extracción de lo que necesitamos para hacer el castigo. Esto nos asegura tener un archivo limpio y manejable para hacer los cruces de información.</p>
 
-            <div class="contenedor-imagen"> 
+            <div class="contenedor-imagen-2"> 
             <img src="Imagenes Castigo/Castigo 2.png" alt="Carpeta para los Summarys" width="600" height="300">
             </div>
 
         <p class="sgs-world-text">3. Traemos el archivo del Oct aprobado para el cierre.  </p>
         <p class=".sgs-text">Vamos a copiar el archivo del Otc y lo vamos a guardar en la carpeta Python - Castigo Unbill Revenue - OTC. Esto con el fin de realizar el analisis de datos, la limpieza, trasformación y extracción de lo que necesitamos para hacer el castigo. Esto nos asegura tener un archivo limpio y manejable para hacer los cruces de información.</p>
 
-            <div class="contenedor-imagen"> 
+            <div class="contenedor-imagen-2"> 
             <img src="Imagenes Castigo/Castigo 3.png" alt="Carpeta para OTC" width="600" height="300">
             </div>
 
@@ -68,7 +66,7 @@
         <p class=".sgs-text">Al ejecutar este Script nos va a generar un archivo de excel llamado Reporte_Consolidado_Final que vamos a dejar en la carpeta.</p>
 
 
-            <div class="contenedor-imagen"> 
+            <div class="contenedor-imagen-2"> 
             <img src="Imagenes Castigo/Castigo 5.png" alt="Script Python Consolidar" width="600" height="300">
             </div>
 
@@ -76,7 +74,7 @@
         <p class=".sgs-text">Al ejecutar este Script nos va a generar un archivo de excel llamado Reporte_OTC_Concatenado que vamos a dejar en la carpeta.</p>
 
 
-            <div class="contenedor-imagen"> 
+            <div class="contenedor-imagen-2"> 
             <img src="Imagenes Castigo/Castigo 6.png" alt="Script Python OTC" width="600" height="300">
             </div>
 
@@ -84,7 +82,7 @@
         <p class=".sgs-text">Al ejecutar este Script nos va a generar un archivo de excel llamado Reporte_Final_CRUZADO_Y_CALCULADO_FILTRADO que vamos a dejar en la carpeta.</p>
 
 
-            <div class="contenedor-imagen"> 
+            <div class="contenedor-imagen-2"> 
             <img src="Imagenes Castigo/Castigo 7.png" alt="Script Python cruce" width="600" height="300">
             </div>
 
@@ -98,14 +96,14 @@
         <p class=".sgs-text">Este nos va a generar los asientos contables de las cuentas 1651111 y 1651912 en PEN y USD respectivamente, ahora lo que tienes que hacer es duplicar el asiento 1651111 (son las hojas USD y PEN del archivo generado de asientos respectivamente) y cambiarle la cuenta por la 1661120 para generar el tercer asiento.</p>
 
 
-            <div class="contenedor-imagen"> 
+            <div class="contenedor-imagen-2"> 
             <img src="Imagenes Castigo/Castigo 8.png" alt="Script Python Asientos" width="600" height="300">
             </div>
 
         <p class="sgs-world-text">10. El último asiento que vamos a crear es el de la cuenta 5549416. Para ello vamos a copiar el asiento de la cuenta 1651912. (Hoja USD_DB y PEN_DB del archivo generado)</p>
         <p class=".sgs-text">En este asiento vamos a borrar la información de las columnas Activity y Cost Level. Y con un cruce entre el listado de Cecos actualizado vamos a buscar cada uno de los datos por Cost Center y Location</p>
 
-            <div class="contenedor-imagen"> 
+            <div class="contenedor-imagen-2"> 
             <img src="Imagenes Castigo/Castigo 9.png" alt="Listado de Cecos" width="600" height="300">
             </div>
 
@@ -115,7 +113,7 @@
 
         <p class="sgs-world-text">13. Cuando finalice el proceso de WebAdi, ingresamos a Oracle y buscamos los asientos, adjuntamos los soportes y Posteamos </p>
 
-            <div class="contenedor-imagen"> 
+            <div class="contenedor-imagen-2"> 
             <img src="Imagenes Castigo/Castigo 10.png" alt="Oracle Asientos" width="600" height="300">
             </div>
 
