@@ -181,7 +181,7 @@ a {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 15px;
-    
+    position: relative;
 }
 
 .nav-links li a {
@@ -465,3 +465,55 @@ h1 {
     line-height: 1.4;
 }
 /* hasta aqui Contenedor explicaión por pasos */
+
+/* Contenedor del item que tiene el desplegable */
+.dropdown {
+    position: relative;
+}
+
+/* Estilo para el botón/enlace principal del dropdown */
+.dropbtn {
+    cursor: pointer;
+}
+
+/* El cuadro que contiene los enlaces (oculto por defecto) */
+.dropdown-content {
+    display: none; /* Oculto */
+    position: absolute;
+    background-color: #444; /* Un tono más claro que el #333 de la barra */
+    min-width: 220px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
+    z-index: 1000; /* Asegura que esté por encima de todo */
+    top: 100%; /* Aparece justo debajo de la barra */
+    left: 0;
+    list-style: none;
+    padding: 0;
+}
+
+/* Enlaces dentro del menú desplegable */
+.dropdown-content li a {
+    padding: 12px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid #555;
+    text-align: left;
+    width: 100%;
+}
+
+/* Cambio de color al pasar por los links del submenú */
+.dropdown-content li a:hover {
+    background-color: #f58505; /* Naranja SGS */
+    color: white;
+}
+
+/* LA MAGIA: Muestra el contenido cuando el mouse pasa por encima del LI padre */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Estilo para la flechita indicadora (opcional) */
+.dropbtn::after {
+    content: ' ▼';
+    font-size: 10px;
+    vertical-align: middle;
+    opacity: 0.7;
+}
