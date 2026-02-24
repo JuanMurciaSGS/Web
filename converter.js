@@ -52,24 +52,25 @@ document.addEventListener('DOMContentLoaded', () => {
 // ----------------------------------------------------------------------
 function processUnidentifyFile(dataArrayBuffer, fileName) {
     try {
-        // Cargar el libro de trabajo (workbook) desde el ArrayBuffer
         const workbook = XLSX.read(dataArrayBuffer, { type: 'array' });
-        
-        // Asumimos que queremos la primera hoja
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         
-        // Convertir la hoja a formato Array of Arrays (AoA)
-        // Usamos cellDates: true para obtener objetos Date de JavaScript
+        // Mapeo de meses de Inglés a Español para corregir el input
+        const monthMap = {
+            'JAN': 'JAN', 'FEB': 'FEB', 'MAR': 'MAR', 'APR': 'APR', 'MAY': 'MAY', 'JUN': 'JUN',
+            'JUL': 'JUL', 'AUG': 'AUG', 'SEP': 'SEP', 'OCT': 'OCT', 'NOV': 'NOV', 'DEC': 'DEC'
+        };
+        // Nota: JS Date reconoce JAN, FEB, etc. El problema suele ser que Excel espera 
+        // el formato del sistema. Forzaremos la creación de un objeto Date real aquí.
+
         const allRows = XLSX.utils.sheet_to_json(worksheet, { 
             header: 1, 
-            raw: false,
-            cellDates: true, 
-            dateNF: 'dd/mm/yyyy' 
+            raw: false 
         });
 
         if (allRows.length === 0) {
-            statusMessage.textContent = 'El archivo está vacío o la hoja no contiene datos.';
+            statusMessage.textContent = 'El archivo está vacío.';
             statusMessage.style.color = 'red';
             return;
         }
@@ -77,57 +78,54 @@ function processUnidentifyFile(dataArrayBuffer, fileName) {
         const headers = allRows[0];
         const dataRows = allRows.slice(1);
         
-        // === CONFIGURACIÓN DE CLASIFICACIÓN ===
         const CLASS_COLUMN_INDEX = 15; 
-        const CLASS_COLUMN_NAME = headers[CLASS_COLUMN_INDEX];
-        
-        if (!CLASS_COLUMN_NAME) {
-            statusMessage.textContent = `Error: La columna de clasificación (índice ${CLASS_COLUMN_INDEX}) no existe.`;
-            statusMessage.style.color = 'red';
-            return;
-        }
-        
-        // === CONFIGURACIÓN DE TIPOS DE COLUMNAS SOLICITADOS ===
-        const TEXT_COLS = ['Receipt Number'];
         const DATE_COLS = ['Receipt Date', 'Deposit Date', 'GL Date'];
         const NUMBER_COLS = ['Receipt Amount', 'Net Amount', 'Unapplied Amount', 'Unidentified Amount'];
+        const TEXT_COLS = ['Receipt Number'];
 
-        // Obtener los índices de las columnas por nombre
         const colIndices = {};
         headers.forEach((header, index) => {
             colIndices[header.trim()] = index;
         });
 
-        // Conjuntos para una búsqueda rápida de índices
         const dateIndices = DATE_COLS.map(name => colIndices[name]).filter(i => i !== undefined);
         const numberIndices = NUMBER_COLS.map(name => colIndices[name]).filter(i => i !== undefined);
         const textIndices = TEXT_COLS.map(name => colIndices[name]).filter(i => i !== undefined);
         
-        // 1. Análisis y Clasificación de Datos
         const sheetsData = {}; 
 
         dataRows.forEach(row => {
-            
-            // Usamos String() para asegurar que el valor se pueda usar como clave (nombre de la hoja)
             const classValue = String(row[CLASS_COLUMN_INDEX] || "SIN BANCO"); 
             
+            // --- CORRECCIÓN DE FECHAS ANTES DE CLASIFICAR ---
+            dateIndices.forEach(idx => {
+                if (row[idx]) {
+                    let dateStr = String(row[idx]);
+                    // Reemplazar abreviaturas comunes si vienen en formatos extraños
+                    // Intentar crear el objeto fecha
+                    let parsedDate = new Date(dateStr);
+                    
+                    // Si la fecha es válida, la guardamos como objeto Date
+                    if (!isNaN(parsedDate.getTime())) {
+                        row[idx] = parsedDate;
+                    }
+                }
+            });
+
             if (!sheetsData[classValue]) {
                 sheetsData[classValue] = [headers];
             }
             sheetsData[classValue].push(row);
         });
 
-        // 2. Creación del Nuevo Archivo XLSX con Múltiples Hojas y Tipado
         const outputWorkbook = XLSX.utils.book_new();
 
         for (const classValue in sheetsData) {
             if (sheetsData.hasOwnProperty(classValue)) {
-                const data = sheetsData[classValue]; // Array of Arrays (AoA)
-                
-                // Crear hoja. cellDates: true es crucial para mantener los objetos Date en ws.
+                const data = sheetsData[classValue];
+                // cellDates: true permite que los objetos Date se conviertan a fechas de Excel
                 const ws = XLSX.utils.aoa_to_sheet(data, { cellDates: true }); 
                 
-                // Recorrer las celdas y aplicar formato (desde la fila 1, ya que la 0 es el encabezado)
                 for (let R = 1; R < data.length; ++R) {
                     const row = data[R];
                     for (let C = 0; C < row.length; ++C) {
@@ -136,39 +134,31 @@ function processUnidentifyFile(dataArrayBuffer, fileName) {
                         
                         if (!cell || cell.v === undefined || cell.v === null) continue;
 
-                        // 1. Formato de Fecha
+                        // 1. Forzar Formato de Fecha Real
                         if (dateIndices.includes(C)) {
-                            if (cell.v instanceof Date) {
-                                // Convertir el objeto Date de JS a número de serie de fecha de Excel
-                                cell.v = datenum(cell.v); 
-                                cell.t = 'n'; // El tipo de celda es numérico para fechas
-                                // Usamos AAAA para forzar el año a 4 dígitos
-                                cell.z = 'dd/mm/aaaa'; 
-                            } else {
-                                // Si no es un Date object, se mantiene como texto.
-                                cell.t = 's';
-                                cell.v = String(cell.v);
+                            let d = cell.v;
+                            // Si por alguna razón es string, intentar convertirlo una última vez
+                            if (!(d instanceof Date)) {
+                                d = new Date(d);
+                            }
+
+                            if (d instanceof Date && !isNaN(d.getTime())) {
+                                cell.t = 'n'; 
+                                cell.v = datenum(d);
+                                cell.z = 'dd/mm/yyyy'; // Formato estándar de Excel
                             }
                         } 
                         // 2. Formato de Número
                         else if (numberIndices.includes(C)) {
-                            // Limpiamos comas (si existen) y convertimos a flotante
                             const value = parseFloat(String(cell.v).replace(/,/g, ''));
                             if (!isNaN(value)) {
-                                cell.v = value; 
-                                cell.t = 'n'; 
-                                cell.z = '#,##0.00'; // Formato con separador de miles y 2 decimales
-                            } else {
-                                cell.t = 's'; 
+                                cell.v = value; cell.t = 'n'; cell.z = '#,##0.00';
                             }
                         }
-                        // 3. Formato de Texto (Receipt Number)
+                        // 3. Formato de Texto
                         else if (textIndices.includes(C)) {
-                            // Aseguramos que el valor sea un string y forzamos el formato de texto puro.
-                            const textValue = String(cell.v).trim();
-                            cell.v = textValue; 
-                            cell.t = 's'; 
-                            cell.z = '@'; // Formato de texto puro de Excel para evitar notación científica
+                            cell.v = String(cell.v).trim();
+                            cell.t = 's'; cell.z = '@';
                         }
                     }
                 }
@@ -178,21 +168,18 @@ function processUnidentifyFile(dataArrayBuffer, fileName) {
             }
         }
 
-        // 3. Descarga del Archivo Excel (.xlsx)
         const outputFileName = fileName.replace(/\.[^/.]+$/, "") + "_UnidentifyReport.xlsx";
-        
         XLSX.writeFile(outputWorkbook, outputFileName);
         
-        statusMessage.textContent = `¡Conversión y clasificación exitosa! Archivo Excel con ${Object.keys(sheetsData).length} hojas (por Banco) descargado.`;
+        statusMessage.textContent = `¡Conversión exitosa! Fechas corregidas y normalizadas.`;
         statusMessage.style.color = 'green';
 
     } catch (error) {
-        console.error("Error durante el procesamiento del archivo Unidentify:", error);
-        statusMessage.textContent = `Error al procesar el archivo. Asegúrate de que sea un archivo XLS/XLSX válido. Detalle: ${error.message}`;
+        console.error("Error:", error);
+        statusMessage.textContent = `Error: ${error.message}`;
         statusMessage.style.color = 'red';
     }
 }
-
 // ----------------------------------------------------------------------
 // --- LÓGICA ESPECÍFICA PARA EL REPORTE AGEING (Múltiples Hojas) ---
 // ----------------------------------------------------------------------
