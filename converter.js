@@ -180,15 +180,18 @@ function processUnidentifyFile(dataArrayBuffer, fileName) {
         statusMessage.style.color = 'red';
     }
 }
+
 // ----------------------------------------------------------------------
 // --- LÓGICA ESPECÍFICA PARA EL REPORTE AGEING (Múltiples Hojas) ---
 // ----------------------------------------------------------------------
+
+// --- LÓGICA ACTUALIZADA PARA RECONOCIMIENTO DE FECHAS REALES ---
 function processAgeingFile(fileContent, fileName) {
     try {
         const allRows = fileContent.split('\n')
             .map(line => line.trim())
             .filter(line => line.length > 0)
-            .map(line => line.split('\t')); // Asumimos separador TAB (\t)
+            .map(line => line.split('\t'));
 
         if (allRows.length === 0) {
             statusMessage.textContent = 'El archivo está vacío.';
@@ -198,51 +201,108 @@ function processAgeingFile(fileContent, fileName) {
 
         const headers = allRows[0];
         const dataRows = allRows.slice(1);
-        
-        // Columna 10 (índice 9) para clasificar
-        const CLASS_COLUMN_INDEX = 9; 
-        const CLASS_COLUMN_NAME = headers[CLASS_COLUMN_INDEX];
-        
-        if (!CLASS_COLUMN_NAME) {
-            statusMessage.textContent = `Error: La columna de clasificación (índice ${CLASS_COLUMN_INDEX}) no existe.`;
-            statusMessage.style.color = 'red';
-            return;
-        }
 
-        // Análisis y Clasificación de Datos en sheetsData
+        const idxTrxDate = headers.indexOf('TRX_DATE');
+        const idxTrxNumber = headers.indexOf('TRX_NUMBER');
+        const idxInvAmt = headers.indexOf('INVOICE_AMT');
+        const idxBalance = headers.indexOf('BALANCE');
+        const idxBalFunct = headers.indexOf('BALANCE_FUNCT');
+        const CLASS_COLUMN_INDEX = 9;
+
+        const monthMap = { 'JAN': 0, 'FEB': 1, 'MAR': 2, 'APR': 3, 'MAY': 4, 'JUN': 5, 
+                           'JUL': 6, 'AUG': 7, 'SEP': 8, 'OCT': 9, 'NOV': 10, 'DEC': 11 };
+
         const sheetsData = {}; 
+
         dataRows.forEach(row => {
-            const classValue = row[CLASS_COLUMN_INDEX] || "SIN CLASIFICAR";
-            
+            let processedRow = [...row];
+
+            // --- TRATAMIENTO DE FECHA (CONVERSIÓN A OBJETO DATE) ---
+            if (idxTrxDate !== -1 && processedRow[idxTrxDate]) {
+                let rawDate = processedRow[idxTrxDate].toUpperCase(); // Ej: "15-JAN-2024"
+                let parts = rawDate.split(/[-/]/); // Divide por - o /
+
+                if (parts.length === 3) {
+                    const day = parseInt(parts[0]);
+                    const monthStr = parts[1];
+                    const year = parseInt(parts[2]);
+                    const monthIndex = monthMap[monthStr];
+
+                    if (monthIndex !== undefined) {
+                        // Creamos un objeto Date real de JS (Año, Mes, Día)
+                        // Si el año viene en 2 dígitos (24), le sumamos 2000
+                        const fullYear = year < 100 ? 2000 + year : year;
+                        processedRow[idxTrxDate] = new Date(fullYear, monthIndex, day);
+                    }
+                }
+            }
+
+            // --- TRATAMIENTO DE NÚMEROS (MONEDA) ---
+            [idxInvAmt, idxBalance, idxBalFunct].forEach(idx => {
+                if (idx !== -1 && processedRow[idx]) {
+                    const cleanNum = parseFloat(processedRow[idx].replace(/,/g, ''));
+                    processedRow[idx] = isNaN(cleanNum) ? processedRow[idx] : cleanNum;
+                }
+            });
+
+            // --- TRATAMIENTO DE TEXTO (TRX_NUMBER) ---
+            if (idxTrxNumber !== -1) {
+                processedRow[idxTrxNumber] = String(processedRow[idxTrxNumber]);
+            }
+
+            const classValue = processedRow[CLASS_COLUMN_INDEX] || "SIN CLASIFICAR";
             if (!sheetsData[classValue]) {
                 sheetsData[classValue] = [headers];
             }
-            sheetsData[classValue].push(row);
+            sheetsData[classValue].push(processedRow);
         });
 
-        // Creación del Archivo XLSX con Múltiples Hojas
         const workbook = XLSX.utils.book_new();
 
         for (const classValue in sheetsData) {
-            if (sheetsData.hasOwnProperty(classValue)) {
-                const data = sheetsData[classValue];
-                const ws = XLSX.utils.aoa_to_sheet(data); 
-                const sheetName = classValue.substring(0, 31);
-                XLSX.utils.book_append_sheet(workbook, ws, sheetName);
+            const data = sheetsData[classValue];
+            
+            // IMPORTANTE: activamos cellDates: true para que reconozca los objetos Date
+            const ws = XLSX.utils.aoa_to_sheet(data, { cellDates: true }); 
+
+            const range = XLSX.utils.decode_range(ws['!ref']);
+            for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+
+                // Aplicar Formato Visual de Fecha
+                if (idxTrxDate !== -1) {
+                    const cellRef = XLSX.utils.encode_cell({r: R, c: idxTrxDate});
+                    if (ws[cellRef]) ws[cellRef].z = 'dd/mm/yyyy'; 
+                }
+
+                // Formato Moneda
+                [idxInvAmt, idxBalance, idxBalFunct].forEach(idx => {
+                    if (idx !== -1) {
+                        const cellRef = XLSX.utils.encode_cell({r: R, c: idx});
+                        if (ws[cellRef]) ws[cellRef].z = '#,##0.00'; 
+                    }
+                });
+
+                // Formato Texto
+                if (idxTrxNumber !== -1) {
+                    const cellRef = XLSX.utils.encode_cell({r: R, c: idxTrxNumber});
+                    if (ws[cellRef]) {
+                        ws[cellRef].t = 's'; // Forzamos tipo String
+                        ws[cellRef].z = '@';
+                    }
+                }
             }
+
+            const sheetName = classValue.substring(0, 31).replace(/[\\?*:[\]/]/g, "");
+            XLSX.utils.book_append_sheet(workbook, ws, sheetName);
         }
 
-        // Descarga
-        const outputFileName = fileName.replace(/\.[^/.]+$/, "") + "_AgeingReport.xlsx";
-        XLSX.writeFile(workbook, outputFileName);
-        
-        statusMessage.textContent = `¡Conversión y análisis exitoso! Archivo Excel con ${Object.keys(sheetsData).length} hojas descargado.`;
+        XLSX.writeFile(workbook, fileName.replace(/\.[^/.]+$/, "") + "_AgeingReport.xlsx");
+        statusMessage.textContent = `¡Conversión exitosa!`;
         statusMessage.style.color = 'green';
 
     } catch (error) {
-        console.error("Error durante el procesamiento del archivo AGEING:", error);
-        statusMessage.textContent = `Error al procesar el archivo AGEING. Asegúrate del formato. Detalle: ${error.message}`;
-        statusMessage.style.color = 'red';
+        console.error(error);
+        statusMessage.textContent = `Error: ${error.message}`;
     }
 }
 
