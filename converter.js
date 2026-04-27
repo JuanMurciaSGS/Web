@@ -15,12 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (reportType === 'otc') {
         processFile = processOtcFile;
     } else if (reportType === 'unidentify') {
-        processFile = processUnidentifyFile; // Lógica para XLS/XLSX
+        processFile = processUnidentifyFile; 
     } else {
-        processFile = processAgeingFile; // Lógica para TXT/TSV
+        processFile = processAgeingFile; 
     }
 
-    // 2. EVENT LISTENER PRINCIPAL (Adaptado para leer TXT o XLS/XLSX)
+    // 2. EVENT LISTENER PRINCIPAL
     convertButton.addEventListener('click', () => {
         statusMessage.textContent = ''; 
         const file = fileInput.files[0];
@@ -34,21 +34,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const reader = new FileReader();
         
         reader.onload = function(e) {
-            // La función de procesamiento recibe el contenido (texto o ArrayBuffer)
             processFile(e.target.result, file.name);
         };
 
-        // Si es Unidentify, leemos el archivo como ArrayBuffer (necesario para XLS/XLSX).
         if (reportType === 'unidentify') {
              reader.readAsArrayBuffer(file);
         } else {
-             // Si es OTC o Ageing, leemos el archivo como texto (necesario para TXT/TSV).
              reader.readAsText(file);
         }
     });
 
 // ----------------------------------------------------------------------
-// --- LÓGICA ESPECÍFICA PARA EL REPORTE UNIDENTIFY (Archivos XLS/XLSX) ---
+// --- LÓGICA REPORTE UNIDENTIFY ---
 // ----------------------------------------------------------------------
 function processUnidentifyFile(dataArrayBuffer, fileName) {
     try {
@@ -56,18 +53,7 @@ function processUnidentifyFile(dataArrayBuffer, fileName) {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         
-        // Mapeo de meses de Inglés a Español para corregir el input
-        const monthMap = {
-            'JAN': 'JAN', 'FEB': 'FEB', 'MAR': 'MAR', 'APR': 'APR', 'MAY': 'MAY', 'JUN': 'JUN',
-            'JUL': 'JUL', 'AUG': 'AUG', 'SEP': 'SEP', 'OCT': 'OCT', 'NOV': 'NOV', 'DEC': 'DEC'
-        };
-        // Nota: JS Date reconoce JAN, FEB, etc. El problema suele ser que Excel espera 
-        // el formato del sistema. Forzaremos la creación de un objeto Date real aquí.
-
-        const allRows = XLSX.utils.sheet_to_json(worksheet, { 
-            header: 1, 
-            raw: false 
-        });
+        const allRows = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false });
 
         if (allRows.length === 0) {
             statusMessage.textContent = 'El archivo está vacío.';
@@ -84,9 +70,7 @@ function processUnidentifyFile(dataArrayBuffer, fileName) {
         const TEXT_COLS = ['Receipt Number'];
 
         const colIndices = {};
-        headers.forEach((header, index) => {
-            colIndices[header.trim()] = index;
-        });
+        headers.forEach((header, index) => { colIndices[header.trim()] = index; });
 
         const dateIndices = DATE_COLS.map(name => colIndices[name]).filter(i => i !== undefined);
         const numberIndices = NUMBER_COLS.map(name => colIndices[name]).filter(i => i !== undefined);
@@ -96,96 +80,50 @@ function processUnidentifyFile(dataArrayBuffer, fileName) {
 
         dataRows.forEach(row => {
             const classValue = String(row[CLASS_COLUMN_INDEX] || "SIN BANCO"); 
-            
-            // --- CORRECCIÓN DE FECHAS ANTES DE CLASIFICAR ---
             dateIndices.forEach(idx => {
                 if (row[idx]) {
-                    let dateStr = String(row[idx]);
-                    // Reemplazar abreviaturas comunes si vienen en formatos extraños
-                    // Intentar crear el objeto fecha
-                    let parsedDate = new Date(dateStr);
-                    
-                    // Si la fecha es válida, la guardamos como objeto Date
-                    if (!isNaN(parsedDate.getTime())) {
-                        row[idx] = parsedDate;
-                    }
+                    let parsedDate = new Date(row[idx]);
+                    if (!isNaN(parsedDate.getTime())) row[idx] = parsedDate;
                 }
             });
 
-            if (!sheetsData[classValue]) {
-                sheetsData[classValue] = [headers];
-            }
+            if (!sheetsData[classValue]) { sheetsData[classValue] = [headers]; }
             sheetsData[classValue].push(row);
         });
 
         const outputWorkbook = XLSX.utils.book_new();
-
         for (const classValue in sheetsData) {
-            if (sheetsData.hasOwnProperty(classValue)) {
-                const data = sheetsData[classValue];
-                // cellDates: true permite que los objetos Date se conviertan a fechas de Excel
-                const ws = XLSX.utils.aoa_to_sheet(data, { cellDates: true }); 
-                
-                for (let R = 1; R < data.length; ++R) {
-                    const row = data[R];
-                    for (let C = 0; C < row.length; ++C) {
-                        const cellAddress = XLSX.utils.encode_cell({ c: C, r: R });
-                        const cell = ws[cellAddress];
-                        
-                        if (!cell || cell.v === undefined || cell.v === null) continue;
-
-                        // 1. Forzar Formato de Fecha Real
-                        if (dateIndices.includes(C)) {
-                            let d = cell.v;
-                            // Si por alguna razón es string, intentar convertirlo una última vez
-                            if (!(d instanceof Date)) {
-                                d = new Date(d);
-                            }
-
-                            if (d instanceof Date && !isNaN(d.getTime())) {
-                                cell.t = 'n'; 
-                                cell.v = datenum(d);
-                                cell.z = 'dd/mm/yyyy'; // Formato estándar de Excel
-                            }
-                        } 
-                        // 2. Formato de Número
-                        else if (numberIndices.includes(C)) {
-                            const value = parseFloat(String(cell.v).replace(/,/g, ''));
-                            if (!isNaN(value)) {
-                                cell.v = value; cell.t = 'n'; cell.z = '#,##0.00';
-                            }
-                        }
-                        // 3. Formato de Texto
-                        else if (textIndices.includes(C)) {
-                            cell.v = String(cell.v).trim();
-                            cell.t = 's'; cell.z = '@';
-                        }
+            const data = sheetsData[classValue];
+            const ws = XLSX.utils.aoa_to_sheet(data, { cellDates: true }); 
+            
+            for (let R = 1; R < data.length; ++R) {
+                const row = data[R];
+                for (let C = 0; C < row.length; ++C) {
+                    const cell = ws[XLSX.utils.encode_cell({ c: C, r: R })];
+                    if (!cell) continue;
+                    if (dateIndices.includes(C)) {
+                        cell.z = 'dd/mm/yyyy';
+                    } else if (numberIndices.includes(C)) {
+                        const val = parseFloat(String(cell.v).replace(/,/g, ''));
+                        if (!isNaN(val)) { cell.v = val; cell.t = 'n'; cell.z = '#,##0.00'; }
+                    } else if (textIndices.includes(C)) {
+                        cell.t = 's'; cell.z = '@';
                     }
                 }
-                
-                const sheetName = classValue.substring(0, 31); 
-                XLSX.utils.book_append_sheet(outputWorkbook, ws, sheetName);
             }
+            XLSX.utils.book_append_sheet(outputWorkbook, ws, classValue.substring(0, 31));
         }
-
-        const outputFileName = fileName.replace(/\.[^/.]+$/, "") + "_UnidentifyReport.xlsx";
-        XLSX.writeFile(outputWorkbook, outputFileName);
-        
-        statusMessage.textContent = `¡Conversión exitosa! Fechas corregidas y normalizadas.`;
+        XLSX.writeFile(outputWorkbook, fileName.replace(/\.[^/.]+$/, "") + "_UnidentifyReport.xlsx");
+        statusMessage.textContent = `¡Conversión exitosa!`;
         statusMessage.style.color = 'green';
-
     } catch (error) {
-        console.error("Error:", error);
         statusMessage.textContent = `Error: ${error.message}`;
-        statusMessage.style.color = 'red';
     }
 }
 
 // ----------------------------------------------------------------------
-// --- LÓGICA ESPECÍFICA PARA EL REPORTE AGEING (Múltiples Hojas) ---
+// --- LÓGICA REPORTE AGEING (ACTUALIZADA: 88%, 12% Y CONCATENACIÓN) ---
 // ----------------------------------------------------------------------
-
-// --- LÓGICA ACTUALIZADA PARA RECONOCIMIENTO DE FECHAS REALES ---
 function processAgeingFile(fileContent, fileName) {
     try {
         const allRows = fileContent.split('\n')
@@ -199,7 +137,10 @@ function processAgeingFile(fileContent, fileName) {
             return;
         }
 
-        const headers = allRows[0];
+        // AGREGAR CABECERAS NUEVAS
+        let headers = [...allRows[0]];
+        headers.push('BASE (88%)', 'IGV/RET (12%)', 'Descripcion_Cuenta');
+        
         const dataRows = allRows.slice(1);
 
         const idxTrxDate = headers.indexOf('TRX_DATE');
@@ -208,6 +149,19 @@ function processAgeingFile(fileContent, fileName) {
         const idxBalance = headers.indexOf('BALANCE');
         const idxBalFunct = headers.indexOf('BALANCE_FUNCT');
         const CLASS_COLUMN_INDEX = 9;
+        
+        // Índices para la concatenación
+        const concatCols = [
+            'COMPANY', 'ACCOUNT', 'SECTOR', 'ACTIVITY', 'COST CENTER', 
+            'COST LEVEL', 'LOCATION', 'INTERCOMPANY', 'PROJECT', 
+            'STATUTORY', 'RESERVED1', 'RESERVED2'
+        ];
+        const concatIndices = concatCols.map(col => headers.indexOf(col));
+
+        // Índices de las nuevas columnas calculadas
+        const idxBase88 = headers.length - 3;
+        const idxIgv12 = headers.length - 2;
+        const idxDescCuenta = headers.length - 1;
 
         const monthMap = { 'JAN': 0, 'FEB': 1, 'MAR': 2, 'APR': 3, 'MAY': 4, 'JUN': 5, 
                            'JUL': 6, 'AUG': 7, 'SEP': 8, 'OCT': 9, 'NOV': 10, 'DEC': 11 };
@@ -217,105 +171,89 @@ function processAgeingFile(fileContent, fileName) {
         dataRows.forEach(row => {
             let processedRow = [...row];
 
-            // --- TRATAMIENTO DE FECHA (CONVERSIÓN A OBJETO DATE) ---
+            // 1. TRATAMIENTO DE FECHA
             if (idxTrxDate !== -1 && processedRow[idxTrxDate]) {
-                let rawDate = processedRow[idxTrxDate].toUpperCase(); // Ej: "15-JAN-2024"
-                let parts = rawDate.split(/[-/]/); // Divide por - o /
-
+                let rawDate = processedRow[idxTrxDate].toUpperCase();
+                let parts = rawDate.split(/[-/]/);
                 if (parts.length === 3) {
                     const day = parseInt(parts[0]);
-                    const monthStr = parts[1];
+                    const monthIndex = monthMap[parts[1]];
                     const year = parseInt(parts[2]);
-                    const monthIndex = monthMap[monthStr];
-
                     if (monthIndex !== undefined) {
-                        // Creamos un objeto Date real de JS (Año, Mes, Día)
-                        // Si el año viene en 2 dígitos (24), le sumamos 2000
                         const fullYear = year < 100 ? 2000 + year : year;
                         processedRow[idxTrxDate] = new Date(fullYear, monthIndex, day);
                     }
                 }
             }
 
-            // --- TRATAMIENTO DE NÚMEROS (MONEDA) ---
+            // 2. TRATAMIENTO DE NÚMEROS Y CÁLCULOS (88% y 12%)
+            let invAmtValue = 0;
             [idxInvAmt, idxBalance, idxBalFunct].forEach(idx => {
                 if (idx !== -1 && processedRow[idx]) {
                     const cleanNum = parseFloat(processedRow[idx].replace(/,/g, ''));
-                    processedRow[idx] = isNaN(cleanNum) ? processedRow[idx] : cleanNum;
+                    const finalNum = isNaN(cleanNum) ? 0 : cleanNum;
+                    processedRow[idx] = finalNum;
+                    if (idx === idxInvAmt) invAmtValue = finalNum;
                 }
             });
+            processedRow[idxBase88] = invAmtValue * 0.88;
+            processedRow[idxIgv12] = invAmtValue * 0.12;
 
-            // --- TRATAMIENTO DE TEXTO (TRX_NUMBER) ---
-            if (idxTrxNumber !== -1) {
-                processedRow[idxTrxNumber] = String(processedRow[idxTrxNumber]);
-            }
+            // 3. CONCATENACIÓN Descripcion_Cuenta
+            const accountValues = concatIndices.map(idx => {
+                return (idx !== -1 && processedRow[idx]) ? String(processedRow[idx]).trim() : "";
+            });
+            processedRow[idxDescCuenta] = accountValues.join('.');
+
+            // 4. TRATAMIENTO TRX_NUMBER
+            if (idxTrxNumber !== -1) processedRow[idxTrxNumber] = String(processedRow[idxTrxNumber]);
 
             const classValue = processedRow[CLASS_COLUMN_INDEX] || "SIN CLASIFICAR";
-            if (!sheetsData[classValue]) {
-                sheetsData[classValue] = [headers];
-            }
+            if (!sheetsData[classValue]) { sheetsData[classValue] = [headers]; }
             sheetsData[classValue].push(processedRow);
         });
 
         const workbook = XLSX.utils.book_new();
-
         for (const classValue in sheetsData) {
             const data = sheetsData[classValue];
-            
-            // IMPORTANTE: activamos cellDates: true para que reconozca los objetos Date
             const ws = XLSX.utils.aoa_to_sheet(data, { cellDates: true }); 
 
             const range = XLSX.utils.decode_range(ws['!ref']);
             for (let R = range.s.r + 1; R <= range.e.r; ++R) {
-
-                // Aplicar Formato Visual de Fecha
                 if (idxTrxDate !== -1) {
-                    const cellRef = XLSX.utils.encode_cell({r: R, c: idxTrxDate});
-                    if (ws[cellRef]) ws[cellRef].z = 'dd/mm/yyyy'; 
+                    const cell = ws[XLSX.utils.encode_cell({r: R, c: idxTrxDate})];
+                    if (cell) cell.z = 'dd/mm/yyyy'; 
                 }
-
                 // Formato Moneda
-                [idxInvAmt, idxBalance, idxBalFunct].forEach(idx => {
+                [idxInvAmt, idxBalance, idxBalFunct, idxBase88, idxIgv12].forEach(idx => {
                     if (idx !== -1) {
-                        const cellRef = XLSX.utils.encode_cell({r: R, c: idx});
-                        if (ws[cellRef]) ws[cellRef].z = '#,##0.00'; 
+                        const cell = ws[XLSX.utils.encode_cell({r: R, c: idx})];
+                        if (cell) cell.z = '#,##0.00'; 
                     }
                 });
-
-                // Formato Texto
-                if (idxTrxNumber !== -1) {
-                    const cellRef = XLSX.utils.encode_cell({r: R, c: idxTrxNumber});
-                    if (ws[cellRef]) {
-                        ws[cellRef].t = 's'; // Forzamos tipo String
-                        ws[cellRef].z = '@';
-                    }
-                }
+                // Formato Texto para la nueva columna concatenada
+                const cellDesc = ws[XLSX.utils.encode_cell({r: R, c: idxDescCuenta})];
+                if (cellDesc) { cellDesc.t = 's'; cellDesc.z = '@'; }
             }
-
-            const sheetName = classValue.substring(0, 31).replace(/[\\?*:[\]/]/g, "");
-            XLSX.utils.book_append_sheet(workbook, ws, sheetName);
+            XLSX.utils.book_append_sheet(workbook, ws, classValue.substring(0, 31).replace(/[\\?*:[\]/]/g, ""));
         }
-
         XLSX.writeFile(workbook, fileName.replace(/\.[^/.]+$/, "") + "_AgeingReport.xlsx");
-        statusMessage.textContent = `¡Conversión exitosa!`;
+        statusMessage.textContent = `¡Conversión exitosa! Columnas de impuestos y cuenta contable añadidas.`;
         statusMessage.style.color = 'green';
-
     } catch (error) {
-        console.error(error);
         statusMessage.textContent = `Error: ${error.message}`;
     }
 }
 
 // ----------------------------------------------------------------------
-// --- LÓGICA ESPECÍFICA PARA EL REPORTE OTC (Original + Reclasificado con Alerta y Suma) ---
+// --- LÓGICA REPORTE OTC ---
 // ----------------------------------------------------------------------
 function processOtcFile(fileContent, fileName) {
       try {
-        // 1. Parsear el contenido (datos originales)
         const allRows = fileContent.split('\n')
             .map(line => line.trim())
             .filter(line => line.length > 0)
-            .map(line => line.split('\t')); // Asumimos separador TAB (\t)
+            .map(line => line.split('\t'));
 
         if (allRows.length === 0) {
             statusMessage.textContent = 'El archivo está vacío.';
@@ -324,109 +262,52 @@ function processOtcFile(fileContent, fileName) {
         }
 
         const workbook = XLSX.utils.book_new();
-
-        // 2a. Hoja 1: "OTC Original" (Datos completos sin modificar)
         const wsOriginal = XLSX.utils.aoa_to_sheet(allRows); 
         XLSX.utils.book_append_sheet(workbook, wsOriginal, "OTC Original");
 
-        // 2b. Preparación de datos para la Hoja 2: "OTC Reclasificado"
-        
-        // Eliminar las primeras 16 filas (índice 0 hasta 15)
         const adjustedRows = allRows.slice(16); 
-
-        // Configuración de la Reclasificación
-        const TARGET_ACCOUNT_COLUMN_INDEX = 30; // Columna 31 es el índice 30
+        const TARGET_ACCOUNT_COLUMN_INDEX = 30; 
         const OLD_ACCOUNT = '4000427';
         const NEW_ACCOUNT = '4000425';
-
-        // Configuración y contador de Alerta
         const ALERT_CODE = 'F391501';
-        const ALERT_COLUMN_INDEX = 36; // Columna 37 es el índice 36
+        const ALERT_COLUMN_INDEX = 36; 
+        const SUM_COLUMN_INDEX = 51; 
         let alertCount = 0;
-
-        // Configuración y Acumulador de Suma
-        const SUM_COLUMN_INDEX = 51; // Columna 52 es el índice 51
         let totalSum = 0;
 
-        // Iterar, reclasificar, contar la alerta Y REALIZAR LA SUMA
         adjustedRows.forEach(row => {
-            // Reclasificación (Columna 31 / Índice 30)
-            if (row.length > TARGET_ACCOUNT_COLUMN_INDEX) {
-                if (row[TARGET_ACCOUNT_COLUMN_INDEX] === OLD_ACCOUNT) {
-                    row[TARGET_ACCOUNT_COLUMN_INDEX] = NEW_ACCOUNT;
-                }
+            if (row.length > TARGET_ACCOUNT_COLUMN_INDEX && row[TARGET_ACCOUNT_COLUMN_INDEX] === OLD_ACCOUNT) {
+                row[TARGET_ACCOUNT_COLUMN_INDEX] = NEW_ACCOUNT;
             }
-            
-            // Conteo de Alerta (Columna 37 / Índice 36)
-            if (row.length > ALERT_COLUMN_INDEX) {
-                if (row[ALERT_COLUMN_INDEX] === ALERT_CODE) {
-                    alertCount++;
-                }
+            if (row.length > ALERT_COLUMN_INDEX && row[ALERT_COLUMN_INDEX] === ALERT_CODE) {
+                alertCount++;
             }
-            
-            // CÁLCULO DE LA SUMA (Columna 52 / Índice 51)
             if (row.length > SUM_COLUMN_INDEX) {
-                // Intentamos convertir el valor a un número y lo sumamos
                 const value = parseFloat(row[SUM_COLUMN_INDEX]);
-                if (!isNaN(value)) {
-                    totalSum += value;
-                }
+                if (!isNaN(value)) totalSum += value;
             }
         });
 
-        // Hoja 2: Crear la hoja de cálculo con los datos ajustados
         const wsAdjusted = XLSX.utils.aoa_to_sheet(adjustedRows);
         XLSX.utils.book_append_sheet(workbook, wsAdjusted, "OTC Reclasificado");
 
-        // 3. Descarga del Archivo Excel (.xlsx)
         const outputFileName = fileName.replace(/\.[^/.]+$/, "") + "_OTC_Reporte.xlsx";
-        
         XLSX.writeFile(workbook, outputFileName);
         
-        // 4. Mensaje de Estado y Alerta (INCLUYENDO LA SUMA)
-
-        // Formatear la suma para mostrarla mejor, con 2 decimales y separador de miles
-        const formattedSum = totalSum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        
-        let finalMessage = `¡Reporte OTC completado! Archivo Excel con las hojas 'OTC Original' y 'OTC Reclasificado' descargado.`;
-        let messageColor = 'green';
-        
-        // Agregar la suma al mensaje principal
-        finalMessage += ` | **Suma Columna 52: $${formattedSum}**`;
-        
-        // Agregar la alerta si aplica
-        if (alertCount > 0) {
-            finalMessage += ` | ¡⚠️ ALERTA! Código ${ALERT_CODE} encontrado ${alertCount} veces.`;
-            messageColor = 'orange'; 
-        }
-
-        statusMessage.textContent = finalMessage;
-        statusMessage.style.color = messageColor;
-        
+        const formattedSum = totalSum.toLocaleString('en-US', { minimumFractionDigits: 2 });
+        let finalMessage = `¡Reporte OTC completado! Suma: $${formattedSum}`;
+        statusMessage.textContent = finalMessage + (alertCount > 0 ? ` | ⚠️ Alerta: ${alertCount} hallazgos.` : "");
+        statusMessage.style.color = alertCount > 0 ? 'orange' : 'green';
     } catch (error) {
-        console.error("Error durante el procesamiento del archivo OTC:", error);
-        statusMessage.textContent = `Error al procesar el archivo OTC. Asegúrate del formato. Detalle: ${error.message}`;
-        statusMessage.style.color = 'red';
+        statusMessage.textContent = `Error: ${error.message}`;
     }
 }
+
 });
 
-
-// ----------------------------------------------------------------------
-// --- FUNCIÓN DE UTILIDAD REQUERIDA PARA FECHAS (SheetJS) ---
-// ----------------------------------------------------------------------
-
-/**
- * Convierte un objeto Date de JavaScript en el número de serie decimal de Excel.
- * @param {Date} v El objeto Date.
- * @param {boolean} date1904 Usar el sistema de fechas de 1904 (opcional, por defecto false).
- * @returns {number} Número de serie de Excel.
- */
+// --- FUNCIÓN UTILIDAD FECHAS ---
 function datenum(v, date1904) {
-	if(date1904) v+=1462;
-	var epoch = v.getTime(); // ¡Usamos .getTime() para una conversión precisa y corregida!
-	
-	// Calcula la diferencia de tiempo desde el 30 de diciembre de 1899,
-	// que es el día 0 en el sistema de fechas de Excel.
-	return (epoch - new Date(Date.UTC(1899, 11, 30))) / (24 * 60 * 60 * 1000);
+    if(date1904) v+=1462;
+    var epoch = v.getTime();
+    return (epoch - new Date(Date.UTC(1899, 11, 30))) / (24 * 60 * 60 * 1000);
 }
